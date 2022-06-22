@@ -56,3 +56,5 @@ if (WIN32)
                 "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
     endforeach (QT_LIB)
 endif ()
+
+install(TARGETS brick7rope-modeling)

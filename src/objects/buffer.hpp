@@ -4,13 +4,13 @@
 # include <cstddef>
 # include <cstdint>
 # include <cstdlib>
-#include <cstring>
+# include <new>
 
 template<typename elem_t>
 class Buffer
 {
 private:
-    struct Node
+    class Node
     {
     public:
         Buffer<elem_t>::Node *prev = nullptr;
@@ -27,9 +27,13 @@ private:
         static constexpr size_t page_capacity = 255;
 
         Buffer<elem_t>::Page *next;
-        Buffer<elem_t>::Node nodes[Buffer<elem_t>::Page::page_capacity];
+        union
+        {
+            Buffer<elem_t>::Node nodes[Buffer<elem_t>::Page::page_capacity];
+            void *_nodes_sentinel = nullptr;
+        };
 
-        constexpr inline explicit Page(Buffer<elem_t>::Page *next = nullptr) noexcept: next(next)
+        constexpr inline explicit Page(Buffer<elem_t>::Page *next) noexcept: next(next)
         {
             for (size_t i = 1; i < Buffer<elem_t>::Page::page_capacity; i++)
             {
@@ -44,12 +48,6 @@ private:
 
         constexpr inline Buffer<elem_t>::Node *last() noexcept
         { return &(this->nodes[0]); }
-
-        constexpr inline Buffer<elem_t>::Page &operator=(Buffer<elem_t>::Page const &other)
-        {
-            this->next = other.next;
-            return *this;
-        }
     };
 
     Buffer<elem_t>::Page *last_page = nullptr;
@@ -64,15 +62,13 @@ private:
     {
         if (this->last_free == nullptr)
         {
-            Buffer<elem_t>::Page *const p = (Buffer<elem_t>::Page *) (malloc(sizeof(Buffer<elem_t>::Page)));
-            *p = Buffer<elem_t>::Page(this->last_page);
-            this->last_page = p;
-            this->last_free = p->last();
+            this->last_page = (Buffer<elem_t>::Page *) new(malloc(sizeof(Buffer<elem_t>::Page))) Buffer<elem_t>::Page(this->last_page);
+            this->last_free = this->last_page->last();
         }
 
         Buffer<elem_t>::Node *n = this->last_free;
         this->last_free = n->next;
-        *n = Buffer<elem_t>::Node(value);
+        new(n) Buffer<elem_t>::Node(value);
         if (this->last_used != nullptr)
         { this->last_used->next = n; }
         n->prev = this->last_used;

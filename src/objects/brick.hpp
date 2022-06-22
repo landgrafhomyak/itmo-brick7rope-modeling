@@ -1,11 +1,12 @@
 #ifndef BRICK_HPP
 # define BRICK_HPP
 
-# include <QString>
 
-class Brick {
+class Brick
+{
 public:
-    struct Position {
+    struct Position
+    {
     public:
         long double x = 0.0;
         long double y = 0.0;
@@ -18,12 +19,12 @@ public:
 
     Brick::Position pos;
     long double mass;
-    QString name{};
+    char const *name = nullptr;
 
     inline Brick(long double x, long double y, long double mass) noexcept: pos(Brick::Position(x, y)), mass(mass)
     {}
 
-    inline Brick(long double x, long double y, long double mass, QString name) noexcept: pos(Brick::Position(x, y)), mass(mass), name(name)
+    inline Brick(long double x, long double y, long double mass, char const *name) noexcept: pos(Brick::Position(x, y)), mass(mass), name(name)
     {}
 };
 

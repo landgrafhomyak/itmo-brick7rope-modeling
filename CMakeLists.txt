@@ -6,16 +6,17 @@ set(CMAKE_CXX_STANDARD 11)
 
 
 add_executable(brick7rope-modeling
-        src/engine_manager.cpp
+#        src/engine_manager.cpp
         src/main.cpp
-        src/mainwindow.cpp
-        src/scene.cpp
+#        src/mainwindow.cpp
+#        src/objects/scene.cpp
 
-        src/brick.hpp
-        src/engine_manager.hpp
-        src/mainwindow.hpp
-        src/rope.hpp
-        src/scene.hpp
+        src/objects/brick.hpp
+#        src/engine_manager.hpp
+#        src/mainwindow.hpp
+        src/objects/rope.hpp
+        src/objects/scene.hpp
+        src/objects/buffer.hpp
 )
 
 install(TARGETS brick7rope-modeling)

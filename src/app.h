@@ -10,7 +10,7 @@ extern "C" {
 typedef struct Brick7RopeModeling_App
 {
     /* Configuration */
-    size_t button_size;
+    unsigned short button_size;
 
     /* Predefined handlers */
     HINSTANCE hInstance;
@@ -20,8 +20,12 @@ typedef struct Brick7RopeModeling_App
     HCURSOR canvas_cursor;
     struct
     {
-        HICON add;
-        HICON remove;
+        HICON add_brick;
+        HICON remove_brick;
+        HICON add_rope;
+        HICON remove_rope;
+        HICON lock_brick;
+        HICON unlock_brick;
     } button_icons;
 
     /* Window classes */
@@ -33,9 +37,13 @@ typedef struct Brick7RopeModeling_App
     HWND tool_panel_window;
     struct
     {
-        HWND add;
-        HWND remove;
-    } button_windows;
+        HWND add_brick;
+        HWND remove_brick;
+        HWND add_rope;
+        HWND remove_rope;
+        HWND lock_brick;
+        HWND unlock_brick;
+    } tool_panel_stuff_windows;
 
 } Brick7RopeModeling_App;
 
@@ -47,7 +55,7 @@ BOOL Brick7RopeModeling_RegisterWindowClasses(Brick7RopeModeling_App *app);
 
 void Brick7RopeModeling_UnRegisterWindowClasses(Brick7RopeModeling_App *app);
 
-BOOL Brick7RopeModeling_CreateGUI(Brick7RopeModeling_App *app);
+BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app);
 
 # ifdef __cplusplus
 };

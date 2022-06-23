@@ -23,7 +23,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         ret = 2;
         goto FREE_AND_ERR_1;
     }
-    if (!Brick7RopeModeling_CreateGUI(&app))
+    if (!Brick7RopeModeling_CreateAndShowWindows(&app))
     {
         ret = 4;
         goto FREE_AND_ERR_3;

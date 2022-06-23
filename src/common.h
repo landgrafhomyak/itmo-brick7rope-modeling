@@ -15,4 +15,10 @@
 #  define Brick7RopeModeling_Debug(MSG) ((void)0)
 # endif
 
+static inline LPCWSTR ATOM_AS_LPCWSTR(ATOM atom)
+{ return (LPCWSTR)(((uintptr_t)0) | atom); }
+
+static inline LPCSTR ATOM_AS_LPCSTR(ATOM atom)
+{ return (LPCSTR)(((uintptr_t)0) | atom); }
+
 #endif /* Brick7RopeModeling_COMMON_H */

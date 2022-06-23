@@ -35,7 +35,7 @@ BOOL Brick7RopeModeling_RegisterWindowClasses(Brick7RopeModeling_App *app)
 
     WNDCLASSEXW ToolPanel_Class = {
             .cbSize = sizeof(WNDCLASSEXW),
-            .style = 0,
+            .style = CS_NOCLOSE,
             .lpfnWndProc = DefWindowProcW,
             .cbClsExtra = 0,
             .cbWndExtra = 0,
@@ -54,13 +54,15 @@ BOOL Brick7RopeModeling_RegisterWindowClasses(Brick7RopeModeling_App *app)
 
     return TRUE;
 
+    UnregisterClassW(ATOM_AS_LPCWSTR(app->tool_panel_window_class), app->hInstance);
+
     if (0)
     {
         TOOL_PANEL_ERR_0:
         (void) 0;
     }
 
-    UnregisterClassW(app->main_window_class, app->hInstance);
+    UnregisterClassW(ATOM_AS_LPCWSTR(app->main_window_class), app->hInstance);
 
     if (0)
     {
@@ -75,6 +77,6 @@ BOOL Brick7RopeModeling_RegisterWindowClasses(Brick7RopeModeling_App *app)
 
 void Brick7RopeModeling_UnRegisterWindowClasses(Brick7RopeModeling_App *app)
 {
-    UnregisterClassW(app->tool_panel_window_class, app->hInstance);
-    UnregisterClassW(app->main_window_class, app->hInstance);
+    UnregisterClassW(ATOM_AS_LPCWSTR(app->tool_panel_window_class), app->hInstance);
+    UnregisterClassW(ATOM_AS_LPCWSTR(app->main_window_class), app->hInstance);
 }

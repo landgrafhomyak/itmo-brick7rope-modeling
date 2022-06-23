@@ -15,8 +15,8 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="remove.svg"
-   inkscape:export-filename="C:\projects\math\resources\buttons\remove.png"
+   sodipodi:docname="remove_rope.svg"
+   inkscape:export-filename="C:\projects\math\resources\buttons\remove_brick.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -28,9 +28,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="-33.88866"
-     inkscape:cy="35.882785"
+     inkscape:zoom="3.959798"
+     inkscape:cx="-30.843081"
+     inkscape:cy="24.345389"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -57,12 +57,12 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-988.3622)">
-    <circle
-       style="opacity:1;fill:#000080;fill-opacity:1;stroke:#0000ff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="path4136"
-       cx="26"
-       cy="1026.3622"
-       r="16" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 8.0043689,1044.3052 c -0.178571,-18.75 5.9196621,-24.6641 19.8214281,-20.8929 10.761356,2.9194 19.285714,-0.8928 23.571429,-18.5712"
+       id="path4135"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc" />
     <path
        inkscape:connector-curvature="0"
        id="path4147"

@@ -8,6 +8,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     Brick7RopeModeling_App app;
     int ret;
 
+    app.button_size = 32;
+
     app.hInstance = hInstance;
 
     if (!Brick7RopeModeling_LoadResources(&app))

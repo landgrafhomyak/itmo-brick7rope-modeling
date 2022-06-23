@@ -19,7 +19,7 @@ add_executable(
         src/common.h
         src/gui.h
 
-        resources/resources.rc
+        res/resources.rc
         src/app.h
         src/gui/resources.c src/gui/mainloop.c src/gui/window.c)
 

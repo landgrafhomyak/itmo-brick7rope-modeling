@@ -12,7 +12,7 @@ BOOL Brick7RopeModeling_RegisterWindowClasses(Brick7RopeModeling_App *app)
     WNDCLASSEXW MainWindow_Class = {
             .cbSize = sizeof(WNDCLASSEXW),
             .style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW,
-            .lpfnWndProc = DefWindowProc, // todo
+            .lpfnWndProc = DefWindowProcW, // todo
             .cbClsExtra = 0,
             .cbWndExtra = 0,
             .hInstance = app->hInstance,
@@ -36,7 +36,7 @@ BOOL Brick7RopeModeling_RegisterWindowClasses(Brick7RopeModeling_App *app)
     WNDCLASSEXW ToolPanel_Class = {
             .cbSize = sizeof(WNDCLASSEXW),
             .style = 0,
-            .lpfnWndProc = NULL,
+            .lpfnWndProc = DefWindowProcW,
             .cbClsExtra = 0,
             .cbWndExtra = 0,
             .hInstance = app->hInstance,

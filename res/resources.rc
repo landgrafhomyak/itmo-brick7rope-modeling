@@ -1,0 +1,5 @@
+MAIN_ICON      ICON    "icon.ico"
+CANVAS_CURSOR  CURSOR  "cursor.cur"
+
+BUTTON_ADD     ICON    "buttons/add.ico"
+BUTTON_REMOVE  ICON    "buttons/remove.ico"

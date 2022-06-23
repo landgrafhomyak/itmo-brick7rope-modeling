@@ -1,2 +1,2 @@
-MAIN_ICON    ICON    "icon.ico"
-MAIN_CURSOR  CURSOR  "cursor.cur"
+MAIN_ICON      ICON    "icon.ico"
+CANVAS_CURSOR  CURSOR  "cursor.cur"

@@ -1,29 +1,34 @@
 #include <windows.h>
 
+#include "app.h"
 #include "gui.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-    if (!Brick7RopeModeling_GUI_RegisterAllClasses(hInstance))
+    Brick7RopeModeling_App app;
+    int ret;
+
+    app.hInstance = hInstance;
+
+    if (!Brick7RopeModeling_LoadResources(&app))
     {
-        Brick7RopeModeling_Debug("Failed to register windows classes");
-        MessageBoxA(NULL, "Can't register windows classes", "Initializing error", MB_OK | MB_ICONERROR);
-        return 1;
+        ret = 1;
+        goto FREE_AND_ERR_0;
     }
 
-    Brick7RopeModeling_Debug("");
-    Brick7RopeModeling_Debug("Creating windows...");
-    Brick7RopeModeling_Debug("");
-
-    if (!Brick7RopeModeling_GUI_UnRegisterAllClasses())
+    if (!Brick7RopeModeling_RegisterWindowClasses(&app))
     {
-        Brick7RopeModeling_Debug("Failed to unregister windows classes");
-        MessageBoxA(NULL, "Can't unregister windows classes", "Finalizing error", MB_OK | MB_ICONERROR);
-        return 2;
+        ret = 2;
+        goto FREE_AND_ERR_1;
     }
 
-    Brick7RopeModeling_Debug("");
-    Brick7RopeModeling_Debug("Exit code 0");
+    ret = 0;
+    Brick7RopeModeling_UnRegisterWindowClasses(&app);
 
-    return 0;
+    FREE_AND_ERR_1:
+    Brick7RopeModeling_DestroyResources(&app);
+
+    FREE_AND_ERR_0:
+
+    return ret;
 }

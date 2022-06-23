@@ -8,7 +8,6 @@ set(CMAKE_CXX_STANDARD 11)
 add_executable(
         brick7rope-modeling
         src/main.c
-        # src/objects/scene.cpp
 
         src/objects/brick.hpp
         src/objects/rope.hpp
@@ -16,12 +15,13 @@ add_executable(
         src/objects/buffer.hpp
         src/objects/history.hpp
 
-        src/gui/registering.c
+        src/gui/classes.c
         src/common.h
         src/gui.h
 
         resources/resources.rc
-)
+        src/app.h
+        src/gui/resources.c)
 
 target_compile_definitions(brick7rope-modeling PUBLIC UNICODE)
 

@@ -25,6 +25,7 @@ BOOL Brick7RopeModeling_GUI_RegisterAllClasses(HINSTANCE hInstance);
 
 BOOL Brick7RopeModeling_GUI_UnRegisterAllClasses(void);
 
+WPARAM Brick7RopeModeling_Mainloop(Brick7RopeModeling_App *app);
 
 # define Brick7RopeModeling_MainWindow_ClassName (Brick7RopeModeling_WINDOWS_NAME(L"MainWindow"))
 # define Brick7RopeModeling_ToolPanel_ClassName (Brick7RopeModeling_WINDOWS_NAME(L"ToolPanel"))

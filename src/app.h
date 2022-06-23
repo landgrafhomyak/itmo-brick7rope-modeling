@@ -26,6 +26,8 @@ BOOL Brick7RopeModeling_RegisterWindowClasses(Brick7RopeModeling_App *app);
 
 void Brick7RopeModeling_UnRegisterWindowClasses(Brick7RopeModeling_App *app);
 
+BOOL Brick7RopeModeling_CreateGUI(Brick7RopeModeling_App *app);
+
 # ifdef __cplusplus
 };
 # endif

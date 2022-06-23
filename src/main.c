@@ -21,9 +21,20 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         ret = 2;
         goto FREE_AND_ERR_1;
     }
+    if (!Brick7RopeModeling_CreateGUI(&app))
+    {
+        ret = 4;
+        goto FREE_AND_ERR_3;
+    }
+
+    Brick7RopeModeling_Mainloop(&app);
 
     ret = 0;
     Brick7RopeModeling_UnRegisterWindowClasses(&app);
+
+    FREE_AND_ERR_3:
+
+    FREE_AND_ERR_2:
 
     FREE_AND_ERR_1:
     Brick7RopeModeling_DestroyResources(&app);

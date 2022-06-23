@@ -21,7 +21,7 @@ add_executable(
 
         resources/resources.rc
         src/app.h
-        src/gui/resources.c)
+        src/gui/resources.c src/gui/mainloop.c src/gui/window.c)
 
 target_compile_definitions(brick7rope-modeling PUBLIC UNICODE)
 

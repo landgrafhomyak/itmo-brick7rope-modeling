@@ -32,14 +32,38 @@ ATOM *Brick7RopeModeling_MainWindow_RegisterClass(HINSTANCE hInstance)
         Brick7RopeModeling_Debug("  Main window class wasn't initialized, initializing...");
         Brick7RopeModeling_MainWindow_ClassDefImpl.hInstance = hInstance;
 
-        /* todo icon and cursor resources */
+        Brick7RopeModeling_Debug("  Loading icon...");
+        Brick7RopeModeling_MainWindow_ClassDefImpl.hIcon = LoadImageA(hInstance, "MAIN_ICON", IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
+        if (Brick7RopeModeling_MainWindow_ClassDefImpl.hIcon == NULL)
+        {
+            Brick7RopeModeling_Debug("  Failed to load icon, rollback...");
+            goto FINALIZE_AND_RETURN_ERROR_0;
+        }
+        else
+        {
+            Brick7RopeModeling_Debug("  Icon loaded successful");
+        }
+
+#if 0
+        Brick7RopeModeling_Debug("  Loading cursor...");
+        Brick7RopeModeling_MainWindow_ClassDefImpl.hCursor = LoadImageA(hInstance, "MAIN_CURSOR", IMAGE_CURSOR, 0, 0, LR_DEFAULTCOLOR);
+        if (Brick7RopeModeling_MainWindow_ClassDefImpl.hCursor == NULL)
+        {
+            Brick7RopeModeling_Debug("  Failed to load cursor, rollback...");
+            goto FINALIZE_AND_RETURN_ERROR_1;
+        }
+        else
+        {
+            Brick7RopeModeling_Debug("  Cursor loaded successful");
+        }
+#endif
 
         Brick7RopeModeling_Debug("  Creating background brush...");
         Brick7RopeModeling_MainWindow_ClassDefImpl.hbrBackground = CreateSolidBrush(RGB(0, 0, 0));
         if (Brick7RopeModeling_MainWindow_ClassDefImpl.hbrBackground == NULL)
         {
             Brick7RopeModeling_Debug("  Failed to create background brush, rollback...");
-            goto FINALIZE_AND_RETURN_ERROR_0;
+            goto FINALIZE_AND_RETURN_ERROR_2;
         }
         else
         {
@@ -51,7 +75,7 @@ ATOM *Brick7RopeModeling_MainWindow_RegisterClass(HINSTANCE hInstance)
         if (Brick7RopeModeling_MainWindow_Class == 0)
         {
             Brick7RopeModeling_Debug("  Failed to register main window class, rollback...");
-            goto FINALIZE_AND_RETURN_ERROR_1;
+            goto FINALIZE_AND_RETURN_ERROR_3;
         }
         else
         {
@@ -68,8 +92,7 @@ ATOM *Brick7RopeModeling_MainWindow_RegisterClass(HINSTANCE hInstance)
 
     return (ATOM *) &Brick7RopeModeling_MainWindow_Class;
 
-    FINALIZE_AND_RETURN_ERROR_1:
-
+    FINALIZE_AND_RETURN_ERROR_3:
     Brick7RopeModeling_Debug("  Deleting background brush...");
     if (!DeleteObject(Brick7RopeModeling_MainWindow_ClassDefImpl.hbrBackground))
     {
@@ -79,6 +102,30 @@ ATOM *Brick7RopeModeling_MainWindow_RegisterClass(HINSTANCE hInstance)
     {
         Brick7RopeModeling_Debug("  Background brush deleted successful");
 
+    }
+
+    FINALIZE_AND_RETURN_ERROR_2:
+#if 0
+    Brick7RopeModeling_Debug("  Destroying cursor...");
+    if (!DestroyCursor(Brick7RopeModeling_MainWindow_ClassDefImpl.hCursor))
+    {
+        Brick7RopeModeling_Debug("  Failed to destroy cursor");
+    }
+    else
+    {
+        Brick7RopeModeling_Debug("  Cursor destroyed successful");
+    }
+# endif
+
+    FINALIZE_AND_RETURN_ERROR_1:
+    Brick7RopeModeling_Debug("  Destroying icon...");
+    if (!DestroyIcon(Brick7RopeModeling_MainWindow_ClassDefImpl.hIcon))
+    {
+        Brick7RopeModeling_Debug("  Failed to destroy icon");
+    }
+    else
+    {
+        Brick7RopeModeling_Debug("  Icon destroyed successful");
     }
 
     FINALIZE_AND_RETURN_ERROR_0:
@@ -106,6 +153,28 @@ BOOL Brick7RopeModeling_MainWindow_UnRegisterClass(void)
     else
     {
         Brick7RopeModeling_Debug("  Main window class wasn't registered");
+    }
+
+#if 0
+    Brick7RopeModeling_Debug("  Destroying cursor...");
+    if (!DestroyCursor(Brick7RopeModeling_MainWindow_ClassDefImpl.hCursor))
+    {
+        Brick7RopeModeling_Debug("  Failed to destroy cursor");
+    }
+    else
+    {
+        Brick7RopeModeling_Debug("  Cursor destroyed successful");
+    }
+# endif
+
+    Brick7RopeModeling_Debug("  Destroying icon...");
+    if (!DestroyIcon(Brick7RopeModeling_MainWindow_ClassDefImpl.hIcon))
+    {
+        Brick7RopeModeling_Debug("  Failed to destroy icon");
+    }
+    else
+    {
+        Brick7RopeModeling_Debug("  Icon destroyed successful");
     }
 
     return TRUE;

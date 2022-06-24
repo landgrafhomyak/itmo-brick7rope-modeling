@@ -15,6 +15,10 @@ typedef struct Brick7RopeModeling_GUI_MainWindow_Data
     HBITMAP bitmap;
     void *bitmap_data;
     CRITICAL_SECTION mutex;
+    void *scene;
+    long double cx;
+    long double cy;
+    long double zoom;
 } Brick7RopeModeling_GUI_MainWindow_Data;
 
 # ifdef __cplusplus

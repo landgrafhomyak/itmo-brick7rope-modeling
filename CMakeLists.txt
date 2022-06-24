@@ -11,12 +11,6 @@ add_executable(
 
         src/main.c
 
-        src/objects/brick.hpp
-        src/objects/rope.hpp
-        src/objects/scene.hpp
-        src/objects/buffer.hpp
-        src/objects/history.hpp
-
         src/gui/classes.c
         src/common.h
         src/gui.h
@@ -29,7 +23,11 @@ add_executable(
         src/gui/processors.h
         src/gui/main_window_data.h
         src/gui/render.cpp
-)
+        src/objects/stack.h
+        src/objects/stack.c
+        src/objects/scene.h
+        src/objects/scene.c
+        src/objects/brick.h src/objects/brick.c src/objects/rope.h src/objects/rope.c src/objects/scene_arena.h src/objects/scene_arena.c)
 
 target_compile_definitions(brick7rope-modeling PUBLIC UNICODE)
 

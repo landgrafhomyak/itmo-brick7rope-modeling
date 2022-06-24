@@ -8,7 +8,7 @@ WPARAM Brick7RopeModeling_Mainloop(Brick7RopeModeling_App *app)
 
     while ((fGotMessage = GetMessage(&msg,  NULL, 0, 0)) != 0 && fGotMessage != -1)
     {
-        TranslateMessage(&msg);
+//        TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
     return msg.wParam;

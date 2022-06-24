@@ -27,7 +27,9 @@ add_executable(
         src/gui/mainloop.c
         src/gui/window.c
         src/gui/processors.h
-        src/gui/main_window_data.h)
+        src/gui/main_window_data.h
+        src/gui/render.cpp
+)
 
 target_compile_definitions(brick7rope-modeling PUBLIC UNICODE)
 

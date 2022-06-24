@@ -9,9 +9,11 @@ extern "C" {
 
 typedef struct Brick7RopeModeling_GUI_MainWindow_Data
 {
-    unsigned short width;
-    unsigned short height;
-    void *bitmap;
+    DWORD width;
+    DWORD height;
+    HDC hdc;
+    HBITMAP bitmap;
+    void *bitmap_data;
     CRITICAL_SECTION mutex;
 } Brick7RopeModeling_GUI_MainWindow_Data;
 

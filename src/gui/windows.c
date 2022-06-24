@@ -1,6 +1,7 @@
 #include <windows.h>
 #include "../common.h"
 #include "../app.h"
+#include "processors.h"
 
 BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
 {
@@ -16,7 +17,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
             NULL,
             NULL,
             app->hInstance,
-            &app
+            app
     );
     if (app->main_window == NULL)
     { goto FREE_AND_ERR_0; }
@@ -38,7 +39,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
             app->main_window,
             NULL,
             app->hInstance,
-            &app
+            app
     );
     if (app->tool_panel_window == NULL)
     { goto FREE_AND_ERR_1; }
@@ -47,7 +48,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
             WS_EX_NOPARENTNOTIFY,
             L"Button",
             L"Cancel",
-            WS_VISIBLE | WS_CHILD | BS_ICON | WS_DISABLED,
+            WS_VISIBLE | WS_CHILD | BS_ICON,
             app->button_size * 0,
             0,
             app->button_size,
@@ -107,7 +108,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
             WS_EX_NOPARENTNOTIFY,
             L"Button",
             L"Pause",
-            WS_VISIBLE | WS_CHILD | BS_ICON | WS_DISABLED,
+            WS_VISIBLE | WS_CHILD | BS_ICON,
             app->button_size * 3,
             0,
             app->button_size,
@@ -127,7 +128,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
             WS_EX_NOPARENTNOTIFY,
             L"Button",
             L"Undo",
-            WS_VISIBLE | WS_CHILD | BS_ICON | WS_DISABLED,
+            WS_VISIBLE | WS_CHILD | BS_ICON,
             app->button_size * 4,
             0,
             app->button_size,
@@ -147,7 +148,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
             WS_EX_NOPARENTNOTIFY,
             L"Button",
             L"Redo",
-            WS_VISIBLE | WS_CHILD | BS_ICON | WS_DISABLED,
+            WS_VISIBLE | WS_CHILD | BS_ICON,
             app->button_size * 5,
             0,
             app->button_size,
@@ -207,7 +208,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
             WS_EX_NOPARENTNOTIFY,
             L"Button",
             L"Add rope",
-            WS_VISIBLE | WS_CHILD | BS_ICON | WS_DISABLED,
+            WS_VISIBLE | WS_CHILD | BS_ICON,
             app->button_size * 8,
             0,
             app->button_size,
@@ -247,7 +248,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
             WS_EX_NOPARENTNOTIFY,
             L"Button",
             L"Lock brick",
-            WS_VISIBLE | WS_CHILD | BS_ICON | WS_DISABLED,
+            WS_VISIBLE | WS_CHILD | BS_ICON,
             app->button_size * 10,
             0,
             app->button_size,
@@ -267,7 +268,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
             WS_EX_NOPARENTNOTIFY,
             L"Button",
             L"Unlock brick",
-            WS_VISIBLE | WS_CHILD | BS_ICON | WS_DISABLED,
+            WS_VISIBLE | WS_CHILD | BS_ICON,
             app->button_size * 11,
             0,
             app->button_size,
@@ -282,6 +283,8 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
 
     if (SendMessageW(app->tool_panel_stuff_windows.unlock_brick, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.unlock_brick)) != 0)
     { goto FREE_AND_ERR_14; }
+
+    Brick7RopeModeling_ToolPanel_SetButtonsState(app);
 
     ShowWindow(app->main_window, SW_SHOW);
     ShowWindow(app->tool_panel_window, SW_SHOW);

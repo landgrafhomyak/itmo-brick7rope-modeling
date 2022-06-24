@@ -3,9 +3,13 @@
 
 # include <windows.h>
 
+# include "../app.h"
+
 # ifdef __cplusplus
 extern "C" {
 # endif
+
+void Brick7RopeModeling_ToolPanel_SetButtonsState(Brick7RopeModeling_App *app);
 
 LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 

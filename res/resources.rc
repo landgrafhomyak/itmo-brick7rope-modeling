@@ -1,5 +1,9 @@
 MAIN_ICON            ICON    "icon.ico"
 
+BUTTON_CANCEL        ICON    "buttons/cancel.ico"
+BUTTON_RESET         ICON    "buttons/reset.ico"
+BUTTON_RESUME        ICON    "buttons/resume.ico"
+BUTTON_PAUSE         ICON    "buttons/pause.ico"
 BUTTON_ADD_BRICK     ICON    "buttons/add_brick.ico"
 BUTTON_REMOVE_BRICK  ICON    "buttons/remove_brick.ico"
 BUTTON_ADD_ROPE      ICON    "buttons/add_rope.ico"

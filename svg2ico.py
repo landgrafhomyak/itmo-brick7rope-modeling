@@ -4,7 +4,7 @@ from PyQt5.QtCore import QBuffer, QIODevice, QByteArray
 from PyQt5.QtGui import QImage, QIcon
 from PyQt5.QtWidgets import QApplication
 
-path = "res/buttons/unlock_brick.svg"
+path = "res/buttons/resume.svg"
 
 app = QApplication([])
 src = QIcon(path)

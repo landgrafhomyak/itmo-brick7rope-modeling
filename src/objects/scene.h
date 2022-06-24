@@ -35,6 +35,14 @@ BOOL Brick7RopeModeling_Scene_Init(Brick7RopeModeling_Scene *self);
 
 Brick7RopeModeling_Scene *Brick7RopeModeling_Scene_Copy(Brick7RopeModeling_Scene *self, Brick7RopeModeling_Scene *dst);
 
+void Brick7RopeModeling_Scene_RemoveBrick(Brick7RopeModeling_Scene *self, size_t brick_index);
+
+void Brick7RopeModeling_Scene_RemoveRope(Brick7RopeModeling_Scene *self, size_t rope_index);
+
+void Brick7RopeModeling_Scene_AddBrick(Brick7RopeModeling_Scene *self, Brick7RopeModeling_Brick brick);
+
+void Brick7RopeModeling_Scene_AddRope(Brick7RopeModeling_Scene *self, Brick7RopeModeling_Rope rope);
+
 void Brick7RopeModeling_Scene_Finalize(Brick7RopeModeling_Scene *self);
 
 # ifdef __cplusplus

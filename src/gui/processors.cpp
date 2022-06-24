@@ -4,7 +4,6 @@
 #include "../app.h"
 #include "processors.h"
 #include "main_window_data.h"
-#include "../objects/scene.hpp"
 
 LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
@@ -14,23 +13,36 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
         case WM_PAINT:
         {
             PAINTSTRUCT ps;
-            EnterCriticalSection(&(app->main_window_data.mutex));
-            if (app->main_window_data.bitmap != nullptr)
+            EnterCriticalSection(&(app->render_access_mutex));
+            if (app->render_accessories.hdc != nullptr)
             {
                 HDC hdc = GetDC(hWnd);
 
-                BitBlt(hdc, 0, 0, app->main_window_data.width, app->main_window_data.height, app->main_window_data.hdc, 0, 0, SRCCOPY);
+                BitBlt(hdc, 0, 0, app->render_accessories.width, app->render_accessories.height, app->render_accessories.hdc, 0, 0, SRCCOPY);
 
                 ReleaseDC(hWnd, hdc);
             }
-            LeaveCriticalSection(&(app->main_window_data.mutex));
+            LeaveCriticalSection(&(app->render_access_mutex));
             return 0;
         }
         case WM_SIZE:
+            app->main_window_width = LOWORD(lParam);
+            app->main_window_height = HIWORD(lParam);
+            return 0;
+#if 0
         {
-            EnterCriticalSection(&(app->main_window_data.mutex));
+            EnterCriticalSection(&(app->render_access_mutex));
 
-            if (app->main_window_data.bitmap_data == nullptr || app->main_window_data.width * app->main_window_data.height < LOWORD(lParam) * HIWORD(lParam))
+            if (app->main_window_width * app->main_window_height < LOWORD(lParam) * HIWORD(lParam))
+            {
+                if (app->render_accessories.bitmap1 != nullptr)
+                { DeleteObject(app->render_accessories.bitmap1); }
+
+                if (app->render_accessories.bitmap2 != nullptr)
+                { DeleteObject(app->render_accessories.bitmap2); }
+            }
+
+            if (app->main_window_data.bitmap_data == nullptr || )
             {
                 if (app->main_window_data.bitmap_data != nullptr)
                 {
@@ -39,17 +51,16 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                 app->main_window_data.bitmap_data = LocalAlloc(LMEM_FIXED, LOWORD(lParam) * HIWORD(lParam) * 4);
             }
 
-            app->main_window_data.width = LOWORD(lParam);
-            app->main_window_data.height = HIWORD(lParam);
+
 
             static BITMAPINFOHEADER bmih;
             bmih.biSize = sizeof(BITMAPINFOHEADER);
-            bmih.biWidth = (LONG) (app->main_window_data.width);
-            bmih.biHeight = -(LONG) (app->main_window_data.height);
+            bmih.biWidth = (LONG) (app->main_window_width);
+            bmih.biHeight = -(LONG) (app->main_window_height);
             bmih.biPlanes = 1;
             bmih.biBitCount = 32;
             bmih.biCompression = BI_RGB;
-            bmih.biSizeImage = app->main_window_data.width * 4 * app->main_window_data.height;
+            bmih.biSizeImage = app->main_window_width * app->main_window_height * 4;
 
             if (app->main_window_data.bitmap != nullptr)
             { DeleteObject(app->main_window_data.bitmap); }
@@ -60,18 +71,25 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
             LeaveCriticalSection(&(app->main_window_data.mutex));
             return 0;
         }
+#endif
         case WM_CREATE:
         {
             auto create_struct = (CREATESTRUCTW *) lParam;
             SetWindowLongPtrW(hWnd, 0, (LONG_PTR) (app = (Brick7RopeModeling_App *) (create_struct->lpCreateParams)));
             HDC wind_hdc = GetDC(hWnd);
-            app->main_window_data.hdc = CreateCompatibleDC(wind_hdc);
+            app->render_accessories.hdc = CreateCompatibleDC(wind_hdc);
             ReleaseDC(hWnd, wind_hdc);
-            app->main_window_data.bitmap = nullptr;
-            app->main_window_data.bitmap_data = nullptr;
-            app->main_window_data.scene = LocalAlloc(LMEM_FIXED, sizeof(Scene));
-            new (app->main_window_data.scene) Scene;
-            InitializeCriticalSection(&(app->main_window_data.mutex));
+
+            app->render_accessories.width = 0;
+            app->render_accessories.height = 0;
+
+            app->render_accessories.bitmap1 = nullptr;
+            app->render_accessories.bitmap1_data = nullptr;
+            app->render_accessories.bitmap2 = nullptr;
+            app->render_accessories.bitmap2_data = nullptr;
+
+            InitializeCriticalSection(&(app->engine_state));
+            InitializeCriticalSection(&(app->render_access_mutex));
             return 0;
         }
         case WM_DESTROY:
@@ -92,21 +110,13 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
         case WM_COMMAND:
             if ((HWND)lParam == app->tool_panel_stuff_windows.add_brick)
             {
-                ((Scene *)(app->main_window_data.scene)).
+                //((Scene *)(app->main_window_data.scene)).
             }
             return 0;
         case WM_CREATE:
         {
             auto create_struct = (CREATESTRUCTW *) lParam;
             SetWindowLongPtrW(hWnd, 0, (LONG_PTR) (app = (Brick7RopeModeling_App *) (create_struct->lpCreateParams)));
-            HDC wind_hdc = GetDC(hWnd);
-            app->main_window_data.hdc = CreateCompatibleDC(wind_hdc);
-            ReleaseDC(hWnd, wind_hdc);
-            app->main_window_data.bitmap = nullptr;
-            app->main_window_data.bitmap_data = nullptr;
-            app->main_window_data.scene = LocalAlloc(LMEM_FIXED, sizeof(Scene));
-            new (app->main_window_data.scene) Scene;
-            InitializeCriticalSection(&(app->main_window_data.mutex));
             return 0;
         }
         default:

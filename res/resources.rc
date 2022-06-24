@@ -1,5 +1,4 @@
 MAIN_ICON            ICON    "icon.ico"
-CANVAS_CURSOR        CURSOR  "cursor.cur"
 
 BUTTON_ADD_BRICK     ICON    "buttons/add_brick.ico"
 BUTTON_REMOVE_BRICK  ICON    "buttons/remove_brick.ico"

@@ -1,4 +1,4 @@
-#include <Windows.h>
+#include <windows.h>
 #include "../app.h"
 
 BOOL Brick7RopeModeling_LoadResources(Brick7RopeModeling_App *app)

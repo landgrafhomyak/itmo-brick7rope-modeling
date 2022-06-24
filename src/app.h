@@ -2,6 +2,7 @@
 # define Brick7RopeModeling_APP_H
 
 # include <windows.h>
+# include "gui/main_window_data.h"
 
 # ifdef __cplusplus
 extern "C" {
@@ -45,6 +46,12 @@ typedef struct Brick7RopeModeling_App
         HWND unlock_brick;
     } tool_panel_stuff_windows;
 
+    /* Workers */
+    HANDLE render_thread;
+    HANDLE engine_thread;
+
+    /* Windows extra data */
+    Brick7RopeModeling_GUI_MainWindow_Data main_window_data;
 } Brick7RopeModeling_App;
 
 BOOL Brick7RopeModeling_LoadResources(Brick7RopeModeling_App *app);

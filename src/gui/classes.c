@@ -5,16 +5,17 @@
 #include "../common.h"
 #include "../app.h"
 #include "../gui.h"
-
+#include "processors.h"
+#include "main_window_data.h"
 
 BOOL Brick7RopeModeling_RegisterWindowClasses(Brick7RopeModeling_App *app)
 {
     WNDCLASSEXW MainWindow_Class = {
             .cbSize = sizeof(WNDCLASSEXW),
             .style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW,
-            .lpfnWndProc = DefWindowProcW, // todo
+            .lpfnWndProc = Brick7RopeModeling_MainWindow_Proc,
             .cbClsExtra = 0,
-            .cbWndExtra = 0,
+            .cbWndExtra = sizeof(Brick7RopeModeling_GUI_MainWindow_Data),
             .hInstance = app->hInstance,
             .hIcon = app->main_icon,
             .hCursor = app->canvas_cursor,
@@ -36,9 +37,9 @@ BOOL Brick7RopeModeling_RegisterWindowClasses(Brick7RopeModeling_App *app)
     WNDCLASSEXW ToolPanel_Class = {
             .cbSize = sizeof(WNDCLASSEXW),
             .style = CS_NOCLOSE,
-            .lpfnWndProc = DefWindowProcW,
+            .lpfnWndProc = Brick7RopeModeling_ToolPanel_Proc,
             .cbClsExtra = 0,
-            .cbWndExtra = 0,
+            .cbWndExtra = sizeof(Brick7RopeModeling_GUI_MainWindow_Data *),
             .hInstance = app->hInstance,
             .hIcon = app->main_icon,
             .hCursor = NULL,

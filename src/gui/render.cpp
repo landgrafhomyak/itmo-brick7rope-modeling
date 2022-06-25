@@ -202,7 +202,7 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
     } buffer_no = BUFFER_1;
     Brick7RopeModeling_RawBufferCanvas<DWORD> canvas(nullptr, 0, 0);
     int i;
-    Brick7RopeModeling_AppState action;
+    Brick7RopeModeling_AppState state;
 
     Brick7RopeModeling_Scene_Init(&local_scene);
 
@@ -244,9 +244,9 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
         EnterCriticalSection(&(app->engine_mutex));
         Brick7RopeModeling_Scene_Copy(&(app->engine_out), &local_scene);
         LeaveCriticalSection(&(app->engine_mutex));
-        EnterCriticalSection(&(app->action_mutex));
-        action = app->action;
-        LeaveCriticalSection(&(app->action_mutex));
+        EnterCriticalSection(&(app->state.mutex));
+        state = app->state;
+        LeaveCriticalSection(&(app->state.mutex));
 
         switch (buffer_no)
         {
@@ -284,12 +284,12 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
             );
         }
 
-        if (action.action_type == Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType_ADD_BRICK)
+        if (state.action_type == Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType_ADD_BRICK)
         {
             Brick7RopeModeling_DrawCircle<Brick7RopeModeling_RawBufferCanvas<DWORD>>(
                     canvas,
-                    (INT) action.action_value.new_brick.x,
-                    (INT) action.action_value.new_brick.y,
+                    (INT) state.action_value.add_brick.x,
+                    (INT) state.action_value.add_brick.y,
                     app->brick_size,
                     RGB(0, 255, 0)
             );

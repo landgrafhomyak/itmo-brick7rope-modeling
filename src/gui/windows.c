@@ -89,7 +89,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
     CREATE_BUTTON(cancel_selection, L"Cancel selection", 9, 1, 1);
     CREATE_BUTTON(select_brick, L"Select brick", 10, 1, 1);
     CREATE_BUTTON(select_rope, L"Select rope", 11, 1, 1);
-    CREATE_BUTTON(cancel_action, L"Cancel action", 12, 1, 1);
+    CREATE_BUTTON(cancel_action, L"Cancel state", 12, 1, 1);
     CREATE_BUTTON(add_brick, L"Add brick", 13, 1, 1);
     CREATE_BUTTON(remove_brick, L"Remove brick", 14, 1, 1);
     CREATE_BUTTON(add_rope, L"Add rope", 15, 1, 1);

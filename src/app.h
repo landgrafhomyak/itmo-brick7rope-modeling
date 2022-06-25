@@ -13,6 +13,7 @@ extern "C" {
 
 struct Brick7RopeModeling_AppState
 {
+    CRITICAL_SECTION mutex;
 
     enum Brick7RopeModeling_AppState_SelectionType
     {
@@ -38,47 +39,34 @@ struct Brick7RopeModeling_AppState
     {
         Brick7RopeModeling_AppState_ActionType_VOID,
         Brick7RopeModeling_AppState_ActionType_ADD_BRICK,
-        Brick7RopeModeling_AppState_ActionType_NEW_ROPE_0,
-        Brick7RopeModeling_AppState_ActionType_NEW_ROPE_1,
-        Brick7RopeModeling_AppState_ActionType_REMOVE_BRICK,
-        Brick7RopeModeling_AppState_ActionType_REMOVE_ROPE,
+        Brick7RopeModeling_AppState_ActionType_ADD_ROPE_0,
+        Brick7RopeModeling_AppState_ActionType_ADD_ROPE_1,
         Brick7RopeModeling_AppState_ActionType_DRAG_BRICK,
-        Brick7RopeModeling_AppState_ActionType_RUNNING
     } action_type;
 
     union
     {
-        struct Brick7RopeModeling_AppState_Action_NewBrick
+        struct Brick7RopeModeling_AppState_Action_AddBrick
         {
             int x;
             int y;
-        } new_brick;
-        struct Brick7RopeModeling_AppState_Action_NewRope0
+        } add_brick;
+        struct Brick7RopeModeling_AppState_Action_AddRope0
         {
             int x1;
             int y1;
         } new_rope_0;
-        struct Brick7RopeModeling_AppState_Action_NewRope1
+        struct Brick7RopeModeling_AppState_Action_AddRope1
         {
             size_t brick_index;
             int x2;
             int y2;
         } new_rope_1;
-        struct Brick7RopeModeling_AppState_Action_RemoveBrick
+        struct Brick7RopeModeling_AppState_Action_DragBrick
         {
-            int x;
-            int y;
-        } remove_brick;
-        struct Brick7RopeModeling_AppState_Action_RemoveRope
-        {
-            int x;
-            int y;
-        } remove_rope;
-        struct Brick7RopeModeling_AppState_Action_BrickDrag
-        {
-            Brick7RopeModeling_Brick *ptr;
-            int x;
-            int y;
+            size_t brick_index;
+            int ox;
+            int oy;
         } brick_drag;
     } action_value;
 
@@ -183,8 +171,7 @@ typedef struct Brick7RopeModeling_App
     Brick7RopeModeling_SceneArena scene_arena;
     Brick7RopeModeling_Stack stack;
 
-    CRITICAL_SECTION action_mutex;
-    struct Brick7RopeModeling_AppState action;
+    struct Brick7RopeModeling_AppState state;
 } Brick7RopeModeling_App;
 
 BOOL Brick7RopeModeling_LoadResources(Brick7RopeModeling_App *app);

@@ -39,7 +39,7 @@ BOOL Brick7RopeModeling_SceneArena_LinkScene(Brick7RopeModeling_SceneArena *self
     scene->allocated_bricks_count = bricks_count;
     scene->bricks = (Brick7RopeModeling_Brick *) (((uintptr_t) p) + sizeof(struct Brick7RopeModeling_SceneArena_NodeHead));
     scene->allocated_ropes_count = ropes_count;
-    scene->ropes = (Brick7RopeModeling_Rope *) (((uintptr_t) p) + sizeof(Brick7RopeModeling_Brick) * bricks_count);
+    scene->ropes = (Brick7RopeModeling_Rope *) (((uintptr_t) scene->bricks) + sizeof(Brick7RopeModeling_Brick) * bricks_count);
     LeaveCriticalSection(&(self->access_mutex));
 
     return FALSE;

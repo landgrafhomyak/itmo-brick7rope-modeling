@@ -9,11 +9,11 @@
 
 # include <windows.h>
 
+# include "../common.h"
+
 # ifdef __cplusplus
 extern "C" {
 # endif
-
-# define Brick7RopeModeling_Rope_INVALID_INDEX ((size_t)-1)
 
 typedef struct Brick7RopeModeling_Rope
 {

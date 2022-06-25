@@ -33,11 +33,13 @@ struct Brick7RopeModeling_AppState
         {
             size_t rope_index;
         } rope;
-    } section_value;
+    } selection_value;
 
     enum Brick7RopeModeling_AppState_ActionType
     {
         Brick7RopeModeling_AppState_ActionType_VOID,
+        Brick7RopeModeling_AppState_ActionType_SELECT_BRICK,
+        Brick7RopeModeling_AppState_ActionType_SELECT_ROPE,
         Brick7RopeModeling_AppState_ActionType_ADD_BRICK,
         Brick7RopeModeling_AppState_ActionType_ADD_ROPE_0,
         Brick7RopeModeling_AppState_ActionType_ADD_ROPE_1,
@@ -46,6 +48,14 @@ struct Brick7RopeModeling_AppState
 
     union
     {
+        struct Brick7RopeModeling_AppState_Action_SelectBrick
+        {
+            size_t brick_index;
+        } select_brick;
+        struct Brick7RopeModeling_AppState_Action_SelectRope
+        {
+            size_t rope_index;
+        } select_rope;
         struct Brick7RopeModeling_AppState_Action_AddBrick
         {
             int x;
@@ -53,21 +63,23 @@ struct Brick7RopeModeling_AppState
         } add_brick;
         struct Brick7RopeModeling_AppState_Action_AddRope0
         {
-            int x1;
-            int y1;
-        } new_rope_0;
+            size_t brick1_index;
+        } add_rope_0;
         struct Brick7RopeModeling_AppState_Action_AddRope1
         {
-            size_t brick_index;
+            size_t brick1_index;
+            size_t brick2_index;
             int x2;
             int y2;
-        } new_rope_1;
+        } add_rope_1;
         struct Brick7RopeModeling_AppState_Action_DragBrick
         {
             size_t brick_index;
+            int x;
+            int y;
             int ox;
             int oy;
-        } brick_drag;
+        } drag_brick;
     } action_value;
 
 };

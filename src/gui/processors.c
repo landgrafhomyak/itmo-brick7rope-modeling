@@ -1,4 +1,9 @@
+#include <float.h>
+#include <math.h>
+
 #include <windows.h>
+
+#include "../common.h"
 #include "../app.h"
 #include "processors.h"
 #include "../threads.h"
@@ -18,6 +23,46 @@ static void Brick7RopeModeling_GetClientMousePos(HWND hWnd, int *x, int *y)
     { *x = 0, *y = 0; }
     else
     { *x = p.x, *y = p.y; }
+}
+
+static size_t Brick7RopeModeling_GetClosestRope(Brick7RopeModeling_App *app, int x, int y)
+{
+    size_t index;
+    Brick7RopeModeling_Scene *scene = Brick7RopeModeling_Stack_GetCurrent(&(app->stack));
+
+    size_t closest_index;
+    long double distance;
+    long double closest_distance = LDBL_MAX;
+
+    for (index = 0; index < scene->ropes_count; index++)
+    {
+        distance = (scene->bricks[scene->ropes[index].brick1_index].x - x) * (scene->bricks[scene->ropes[index].brick2_index].y - y) - (scene->bricks[scene->ropes[index].brick1_index].y - y) * (scene->bricks[scene->ropes[index].brick2_index].x - x);
+        if (distance < 0)
+        { distance = -distance; }
+        distance /= hypotl(scene->bricks[scene->ropes[index].brick1_index].x - scene->bricks[scene->ropes[index].brick2_index].x, scene->bricks[scene->ropes[index].brick1_index].y - scene->bricks[scene->ropes[index].brick2_index].y);
+
+        if (distance < closest_distance)
+        {
+            closest_index = index;
+            closest_distance = distance;
+        }
+    }
+
+    return closest_distance <= 10 ? closest_index : Brick7RopeModeling_INVALID_INDEX;
+}
+
+static size_t Brick7RopeModeling_GetClosestBrick(Brick7RopeModeling_App *app, int x, int y)
+{
+    signed long long index;
+    Brick7RopeModeling_Scene *scene = Brick7RopeModeling_Stack_GetCurrent(&(app->stack));
+
+    for (index = scene->bricks_count - 1; index >= 0; index--)
+    {
+        if (hypotl(scene->bricks[index].x - x, scene->bricks[index].y - y) <= app->brick_size)
+        { return index; }
+    }
+
+    return Brick7RopeModeling_INVALID_INDEX;
 }
 
 static void Brick7RopeModeling_ToolPanel_Clear(Brick7RopeModeling_App *app);
@@ -47,16 +92,34 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
             EnterCriticalSection(&(app->state.mutex));
             switch (app->state.action_type)
             {
+                case Brick7RopeModeling_AppState_ActionType_SELECT_BRICK:
+                    app->state.action_value.select_brick.brick_index = Brick7RopeModeling_GetClosestBrick(app, LOWORD(lParam), HIWORD(lParam));
+                    break;
+
+                case Brick7RopeModeling_AppState_ActionType_SELECT_ROPE:
+                    app->state.action_value.select_rope.rope_index = Brick7RopeModeling_GetClosestRope(app, LOWORD(lParam), HIWORD(lParam));
+                    break;
+
                 case Brick7RopeModeling_AppState_ActionType_ADD_BRICK:
                     app->state.action_value.add_brick.x = LOWORD(lParam);
                     app->state.action_value.add_brick.y = HIWORD(lParam);
                     break;
+
                 case Brick7RopeModeling_AppState_ActionType_ADD_ROPE_0:
+                    app->state.action_value.add_rope_0.brick1_index = Brick7RopeModeling_GetClosestBrick(app, LOWORD(lParam), HIWORD(lParam));
                     break;
+
                 case Brick7RopeModeling_AppState_ActionType_ADD_ROPE_1:
+                    app->state.action_value.add_rope_1.brick2_index = Brick7RopeModeling_GetClosestBrick(app, LOWORD(lParam), HIWORD(lParam));
+                    app->state.action_value.add_rope_1.x2 = LOWORD(lParam);
+                    app->state.action_value.add_rope_1.y2 = HIWORD(lParam);
                     break;
+
                 case Brick7RopeModeling_AppState_ActionType_DRAG_BRICK:
+                    app->state.action_value.drag_brick.x = LOWORD(lParam);
+                    app->state.action_value.drag_brick.y = HIWORD(lParam);
                     break;
+
                 default:
                     break;
             }
@@ -66,6 +129,24 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
             EnterCriticalSection(&(app->state.mutex));
             switch (app->state.action_type)
             {
+                case Brick7RopeModeling_AppState_ActionType_SELECT_BRICK:
+                    if (app->state.action_value.select_brick.brick_index != Brick7RopeModeling_INVALID_INDEX)
+                    {
+                        app->state.selection_type = Brick7RopeModeling_AppState_SelectionType_BRICK;
+                        app->state.selection_value.brick.brick_index = app->state.action_value.select_brick.brick_index;
+                        app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                    }
+                    break;
+
+                case Brick7RopeModeling_AppState_ActionType_SELECT_ROPE:
+                    if (app->state.action_value.select_rope.rope_index != Brick7RopeModeling_INVALID_INDEX)
+                    {
+                        app->state.selection_type = Brick7RopeModeling_AppState_SelectionType_ROPE;
+                        app->state.selection_value.rope.rope_index = app->state.action_value.select_rope.rope_index;
+                        app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                    }
+                    break;
+
                 case Brick7RopeModeling_AppState_ActionType_ADD_BRICK:
                     Brick7RopeModeling_Stack_Add(&(app->stack));
                     Brick7RopeModeling_Scene_AddBrick(
@@ -76,11 +157,32 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                             }
                     );
                     Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
-
                     break;
+
                 case Brick7RopeModeling_AppState_ActionType_ADD_ROPE_0:
+                    if (app->state.action_value.add_rope_0.brick1_index != Brick7RopeModeling_INVALID_INDEX)
+                    {
+                        size_t brick1_index = app->state.action_value.add_rope_0.brick1_index;
+                        app->state.action_type = Brick7RopeModeling_AppState_ActionType_ADD_ROPE_1;
+                        app->state.action_value.add_rope_1.brick1_index = brick1_index;
+                        Brick7RopeModeling_GetClientMousePos(hWnd, &(app->state.action_value.add_rope_1.x2), &(app->state.action_value.add_rope_1.y2));
+                        app->state.action_value.add_rope_1.brick2_index = Brick7RopeModeling_GetClosestBrick(app, app->state.action_value.add_rope_1.x2, app->state.action_value.add_rope_1.y2);
+                    }
                     break;
                 case Brick7RopeModeling_AppState_ActionType_ADD_ROPE_1:
+                    if (app->state.action_value.add_rope_1.brick2_index != Brick7RopeModeling_INVALID_INDEX)
+                    {
+                        Brick7RopeModeling_Stack_Add(&(app->stack));
+                        Brick7RopeModeling_Scene_AddRope(
+                                Brick7RopeModeling_Stack_GetCurrent(&(app->stack)),
+                                (Brick7RopeModeling_Rope) {
+                                        .brick1_index = app->state.action_value.add_rope_1.brick1_index,
+                                        .brick2_index = app->state.action_value.add_rope_1.brick2_index,
+                                }
+                        );
+                        Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                        app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                    }
                     break;
                 case Brick7RopeModeling_AppState_ActionType_DRAG_BRICK:
                     break;
@@ -214,9 +316,23 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 Brick7RopeModeling_ToolPanel_CancelSelection(app);
             }
             elifButton(select_brick)
-            {}
+            {
+                EnterCriticalSection(&(app->state.mutex));
+                app->state.action_type = Brick7RopeModeling_AppState_ActionType_SELECT_BRICK;
+                int x, y;
+                Brick7RopeModeling_GetClientMousePos(hWnd, &x, &y);
+                app->state.action_value.select_brick.brick_index = Brick7RopeModeling_GetClosestBrick(app, x, y);
+                LeaveCriticalSection(&(app->state.mutex));
+            }
             elifButton(select_rope)
-            {}
+            {
+                EnterCriticalSection(&(app->state.mutex));
+                app->state.action_type = Brick7RopeModeling_AppState_ActionType_SELECT_ROPE;
+                int x, y;
+                Brick7RopeModeling_GetClientMousePos(hWnd, &x, &y);
+                app->state.action_value.select_rope.rope_index = Brick7RopeModeling_GetClosestRope(app, x, y);
+                LeaveCriticalSection(&(app->state.mutex));
+            }
             elifButton(cancel_action)
             {
                 Brick7RopeModeling_ToolPanel_CancelAction(app);
@@ -229,18 +345,73 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 LeaveCriticalSection(&(app->state.mutex));
             }
             elifButton(remove_brick)
-            {}
+            {
+                EnterCriticalSection(&(app->state.mutex));
+                if (app->state.selection_type == Brick7RopeModeling_AppState_SelectionType_BRICK)
+                {
+                    Brick7RopeModeling_Stack_Add(&(app->stack));
+                    Brick7RopeModeling_Scene_RemoveBrick(Brick7RopeModeling_Stack_GetCurrent(&(app->stack)), app->state.selection_value.brick.brick_index);
+                    app->state.selection_type = Brick7RopeModeling_AppState_SelectionType_NONE;
+                    app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                    Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                }
+                LeaveCriticalSection(&(app->state.mutex));
+            }
             elifButton(add_rope)
-            {}
+            {
+                EnterCriticalSection(&(app->state.mutex));
+                if (app->state.selection_type == Brick7RopeModeling_AppState_SelectionType_BRICK)
+                {
+                    app->state.action_type = Brick7RopeModeling_AppState_ActionType_ADD_ROPE_1;
+                    app->state.action_value.add_rope_1.brick1_index = app->state.selection_value.brick.brick_index;
+                    Brick7RopeModeling_GetClientMousePos(hWnd, &(app->state.action_value.add_rope_1.x2), &(app->state.action_value.add_rope_1.y2));
+                    app->state.action_value.add_rope_1.brick2_index = Brick7RopeModeling_GetClosestBrick(app, app->state.action_value.add_rope_1.x2, app->state.action_value.add_rope_1.y2);
+                }
+                else
+                {
+                    app->state.action_type = Brick7RopeModeling_AppState_ActionType_ADD_ROPE_0;
+                    app->state.action_value.add_rope_1.brick1_index = Brick7RopeModeling_INVALID_INDEX;
+                    int x, y;
+                    Brick7RopeModeling_GetClientMousePos(hWnd, &x, &y);
+                    app->state.action_value.add_rope_0.brick1_index = Brick7RopeModeling_GetClosestBrick(app, x, y);
+                }
+                LeaveCriticalSection(&(app->state.mutex));
+            }
             elifButton(remove_rope)
-            {}
-
+            {
+                EnterCriticalSection(&(app->state.mutex));
+                if (app->state.selection_type == Brick7RopeModeling_AppState_SelectionType_ROPE)
+                {
+                    Brick7RopeModeling_Stack_Add(&(app->stack));
+                    Brick7RopeModeling_Scene_RemoveRope(Brick7RopeModeling_Stack_GetCurrent(&(app->stack)), app->state.selection_value.rope.rope_index);
+                    app->state.selection_type = Brick7RopeModeling_AppState_SelectionType_NONE;
+                    app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                    Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                }
+                LeaveCriticalSection(&(app->state.mutex));
+            }
             elifButton(lock_brick)
-            {}
-
+            {
+                EnterCriticalSection(&(app->state.mutex));
+                if (app->state.selection_type == Brick7RopeModeling_AppState_SelectionType_BRICK)
+                {
+                    Brick7RopeModeling_Stack_Add(&(app->stack));
+                    Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.selection_value.brick.brick_index].is_locked = TRUE;
+                    Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                }
+                LeaveCriticalSection(&(app->state.mutex));
+            }
             elifButton(unlock_brick)
-            {}
-
+            {
+                EnterCriticalSection(&(app->state.mutex));
+                if (app->state.selection_type == Brick7RopeModeling_AppState_SelectionType_BRICK)
+                {
+                    Brick7RopeModeling_Stack_Add(&(app->stack));
+                    Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.selection_value.brick.brick_index].is_locked = FALSE;
+                    Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                }
+                LeaveCriticalSection(&(app->state.mutex));
+            }
             elifButton(drag_brick)
             {}
 

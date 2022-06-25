@@ -113,10 +113,80 @@ void Brick7RopeModeling_Fill(canvas_t canvas, INT x1, INT y1, INT x2, INT y2, DW
 }
 
 template<class canvas_t>
-inline void Brick7RopeModeling_DrawCircle(canvas_t canvas, INT cx, INT cy, INT r, DWORD outline, DWORD fill)
+class Brick7RopeModeling_DrawCircle
 {
-    Brick7RopeModeling_Fill(canvas, cx - r, cy - r, cx + r, cy + r, outline, fill);
-}
+private:
+    canvas_t canvas;
+    INT cx;
+    INT cy;
+    INT r;
+    DWORD outline;
+    DWORD fill;
+
+    template<class action_t>
+    inline void calc(DWORD color)
+    {
+        INT x = 0, y = r, delta = 1 - 2 * r, error = 0;
+        action_t action(this->canvas, color);
+
+        while (y >= x)
+        {
+            action.process(cx - x, cy + y, cx + x);
+            action.process(cx - x, cy - y, cx + x);
+            action.process(cx - y, cy + x, cx + y);
+            action.process(cx - y, cy - x, cx + y);
+
+            error = 2 * (delta + y) - 1;
+            if ((delta < 0) && (error <= 0))
+            { delta += 2 * ++x + 1; }
+            else if ((delta > 0) && (error > 0))
+            { delta -= 2 * --y + 1; }
+            else
+            { delta += 2 * (++x - --y); }
+        }
+    }
+
+    class FillAction
+    {
+    private:
+        canvas_t canvas;
+        DWORD color;
+    public:
+        inline constexpr FillAction(canvas_t canvas, DWORD color) noexcept: canvas(canvas), color(color)
+        {}
+
+        inline void process(INT x1, INT y, INT x2)
+        {
+            INT x;
+            for (x = x1 + 1; x < x2; x++)
+            { this->canvas.set_pixel(x, y, this->color); }
+        }
+    };
+
+    class OutlineAction
+    {
+    private:
+        canvas_t canvas;
+        DWORD color;
+    public:
+        inline constexpr OutlineAction(canvas_t canvas, DWORD color) noexcept: canvas(canvas), color(color)
+        {}
+
+        inline void process(INT x1, INT y, INT x2)
+        {
+            this->canvas.set_pixel(x1, y, this->color);
+            this->canvas.set_pixel(x2, y, this->color);
+        }
+    };
+
+public:
+    inline Brick7RopeModeling_DrawCircle(canvas_t canvas, INT cx, INT cy, INT r, DWORD outline, DWORD fill) :
+            canvas(canvas), cx(cx), cy(cy), r(r), outline(outline), fill(fill)
+    {
+        this->calc<Brick7RopeModeling_DrawCircle<canvas_t>::FillAction>(this->fill);
+        this->calc<Brick7RopeModeling_DrawCircle<canvas_t>::OutlineAction>(this->outline);
+    }
+};
 
 DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_App *app)
 {
@@ -196,13 +266,13 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
 
         for (i = 0; i < local_scene.bricks_count; i++)
         {
-            Brick7RopeModeling_DrawCircle(
+            Brick7RopeModeling_DrawCircle<Brick7RopeModeling_RawBufferCanvas<DWORD>>(
                     canvas,
                     (INT) local_scene.bricks[i].x,
                     (INT) local_scene.bricks[i].y,
                     app->brick_size,
-                    RGB(255, 255, 255),
-                    RGB(15, 15, 15)
+                    RGB(255, 0, 0),
+                    RGB(255, 255, 0)
             );
         }
 

@@ -120,8 +120,6 @@ private:
     INT cx;
     INT cy;
     INT r;
-    DWORD outline;
-    DWORD fill;
 
     template<class action_t>
     inline void calc(DWORD color)
@@ -181,10 +179,16 @@ private:
 
 public:
     inline Brick7RopeModeling_DrawCircle(canvas_t canvas, INT cx, INT cy, INT r, DWORD outline, DWORD fill) :
-            canvas(canvas), cx(cx), cy(cy), r(r), outline(outline), fill(fill)
+            canvas(canvas), cx(cx), cy(cy), r(r)
     {
-        this->calc<Brick7RopeModeling_DrawCircle<canvas_t>::FillAction>(this->fill);
-        this->calc<Brick7RopeModeling_DrawCircle<canvas_t>::OutlineAction>(this->outline);
+        this->calc<Brick7RopeModeling_DrawCircle<canvas_t>::FillAction>(fill);
+        this->calc<Brick7RopeModeling_DrawCircle<canvas_t>::OutlineAction>(outline);
+    }
+
+    inline Brick7RopeModeling_DrawCircle(canvas_t canvas, INT cx, INT cy, INT r, DWORD outline) :
+            canvas(canvas), cx(cx), cy(cy), r(r)
+    {
+        this->calc<Brick7RopeModeling_DrawCircle<canvas_t>::OutlineAction>(outline);
     }
 };
 
@@ -198,6 +202,7 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
     } buffer_no = BUFFER_1;
     Brick7RopeModeling_RawBufferCanvas<DWORD> canvas(nullptr, 0, 0);
     int i;
+    Brick7RopeModeling_AppState action;
 
     Brick7RopeModeling_Scene_Init(&local_scene);
 
@@ -239,6 +244,9 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
         EnterCriticalSection(&(app->engine_mutex));
         Brick7RopeModeling_Scene_Copy(&(app->engine_out), &local_scene);
         LeaveCriticalSection(&(app->engine_mutex));
+        EnterCriticalSection(&(app->action_mutex));
+        action = app->action;
+        LeaveCriticalSection(&(app->action_mutex));
 
         switch (buffer_no)
         {
@@ -271,12 +279,24 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
                     (INT) local_scene.bricks[i].x,
                     (INT) local_scene.bricks[i].y,
                     app->brick_size,
-                    RGB(255, 0, 0),
-                    RGB(255, 255, 0)
+                    local_scene.bricks[i].is_locked ? RGB(0, 0, 255) : RGB(255, 0, 0),
+                    local_scene.bricks[i].is_locked ? RGB(0, 127, 255) : RGB(255, 255, 0)
+            );
+        }
+
+        if (action.action_type == Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType_ADD_BRICK)
+        {
+            Brick7RopeModeling_DrawCircle<Brick7RopeModeling_RawBufferCanvas<DWORD>>(
+                    canvas,
+                    (INT) action.action_value.new_brick.x,
+                    (INT) action.action_value.new_brick.y,
+                    app->brick_size,
+                    RGB(0, 255, 0)
             );
         }
 
         Brick7RopeModeling_Scene_Finalize(&local_scene);
+        Brick7RopeModeling_Scene_Init(&local_scene);
 
         EnterCriticalSection(&(app->render_access_mutex));
         switch (buffer_no)

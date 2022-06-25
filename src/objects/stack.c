@@ -45,6 +45,7 @@ Brick7RopeModeling_Scene *Brick7RopeModeling_Stack_Add(Brick7RopeModeling_Stack 
         Brick7RopeModeling_IncP(&(self->start), Brick7RopeModeling_STACK_SIZE);
     }
 
+    Brick7RopeModeling_Scene_Init(&(self->buffer[self->current]));
     return Brick7RopeModeling_Scene_Copy(last, &(self->buffer[self->current]));
 }
 

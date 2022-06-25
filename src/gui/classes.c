@@ -6,7 +6,6 @@
 #include "../app.h"
 #include "../gui.h"
 #include "processors.h"
-#include "main_window_data.h"
 
 BOOL Brick7RopeModeling_RegisterWindowClasses(Brick7RopeModeling_App *app)
 {

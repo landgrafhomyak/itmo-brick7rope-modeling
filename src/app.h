@@ -6,61 +6,82 @@
 # include "objects/rope.h"
 # include "objects/scene_arena.h"
 # include "objects/stack.h"
-# include "gui/main_window_data.h"
 
 # ifdef __cplusplus
 extern "C" {
 # endif
 
-struct Brick7RopeModeling_AppAction
+struct Brick7RopeModeling_AppState
 {
-    enum Brick7RopeModeling_AppAction_Type
+
+    enum Brick7RopeModeling_AppState_SelectionType
     {
-        Brick7RopeModeling_AppAction_Type_VOID,
-        Brick7RopeModeling_AppAction_Type_NEW_BRICK,
-        Brick7RopeModeling_AppAction_Type_NEW_ROPE_0,
-        Brick7RopeModeling_AppAction_Type_NEW_ROPE_1,
-        Brick7RopeModeling_AppAction_Type_REMOVE_BRICK,
-        Brick7RopeModeling_AppAction_Type_REMOVE_ROPE,
-        Brick7RopeModeling_AppAction_Type_DRAG_BRICK,
-        Brick7RopeModeling_AppAction_Type_RUNNING
-    } type;
+        Brick7RopeModeling_AppState_SelectionType_NONE,
+        Brick7RopeModeling_AppState_SelectionType_BRICK,
+        Brick7RopeModeling_AppState_SelectionType_ROPE,
+    } selection_type;
 
     union
     {
-        struct Brick7RopeModeling_AppAction_NewBrick
+        struct Brick7RopeModeling_AppState_Selection_Brick
+        {
+            size_t brick_index;
+        } brick;
+
+        struct Brick7RopeModeling_AppState_Selection_Rope
+        {
+            size_t rope_index;
+        } rope;
+    } section_value;
+
+    enum Brick7RopeModeling_AppState_ActionType
+    {
+        Brick7RopeModeling_AppState_ActionType_VOID,
+        Brick7RopeModeling_AppState_ActionType_ADD_BRICK,
+        Brick7RopeModeling_AppState_ActionType_NEW_ROPE_0,
+        Brick7RopeModeling_AppState_ActionType_NEW_ROPE_1,
+        Brick7RopeModeling_AppState_ActionType_REMOVE_BRICK,
+        Brick7RopeModeling_AppState_ActionType_REMOVE_ROPE,
+        Brick7RopeModeling_AppState_ActionType_DRAG_BRICK,
+        Brick7RopeModeling_AppState_ActionType_RUNNING
+    } action_type;
+
+    union
+    {
+        struct Brick7RopeModeling_AppState_Action_NewBrick
         {
             int x;
             int y;
         } new_brick;
-        struct Brick7RopeModeling_AppAction_NewRope0
+        struct Brick7RopeModeling_AppState_Action_NewRope0
         {
             int x1;
             int y1;
         } new_rope_0;
-        struct Brick7RopeModeling_AppAction_NewRope1
+        struct Brick7RopeModeling_AppState_Action_NewRope1
         {
             size_t brick_index;
             int x2;
             int y2;
         } new_rope_1;
-        struct Brick7RopeModeling_AppAction_RemoveBrick
+        struct Brick7RopeModeling_AppState_Action_RemoveBrick
         {
             int x;
             int y;
         } remove_brick;
-        struct Brick7RopeModeling_AppAction_RemoveRope
+        struct Brick7RopeModeling_AppState_Action_RemoveRope
         {
             int x;
             int y;
         } remove_rope;
-        struct Brick7RopeModeling_AppAction_BrickDrag
+        struct Brick7RopeModeling_AppState_Action_BrickDrag
         {
             Brick7RopeModeling_Brick *ptr;
             int x;
             int y;
         } brick_drag;
-    } value;
+    } action_value;
+
 };
 
 typedef struct Brick7RopeModeling_App
@@ -77,18 +98,26 @@ typedef struct Brick7RopeModeling_App
     HCURSOR canvas_cursor;
     struct
     {
-        HICON cancel;
+        HICON save_capture;
+        HICON save_capture_as;
+        HICON load_capture;
         HICON reset;
         HICON resume;
         HICON pause;
         HICON undo;
         HICON redo;
+        HICON clear;
+        HICON cancel_selection;
+        HICON select_brick;
+        HICON select_rope;
+        HICON cancel_action;
         HICON add_brick;
         HICON remove_brick;
         HICON add_rope;
         HICON remove_rope;
         HICON lock_brick;
         HICON unlock_brick;
+        HICON drag_brick;
     } button_icons;
 
     /* Window classes */
@@ -100,18 +129,26 @@ typedef struct Brick7RopeModeling_App
     HWND tool_panel_window;
     struct
     {
-        HWND cancel;
+        HWND save_capture;
+        HWND save_capture_as;
+        HWND load_capture;
         HWND reset;
         HWND resume;
         HWND pause;
         HWND undo;
         HWND redo;
+        HWND clear;
+        HWND cancel_selection;
+        HWND select_brick;
+        HWND select_rope;
+        HWND cancel_action;
         HWND add_brick;
         HWND remove_brick;
         HWND add_rope;
         HWND remove_rope;
         HWND lock_brick;
         HWND unlock_brick;
+        HWND drag_brick;
     } tool_panel_stuff_windows;
 
     /* Workers */
@@ -147,7 +184,7 @@ typedef struct Brick7RopeModeling_App
     Brick7RopeModeling_Stack stack;
 
     CRITICAL_SECTION action_mutex;
-    struct Brick7RopeModeling_AppAction action;
+    struct Brick7RopeModeling_AppState action;
 } Brick7RopeModeling_App;
 
 BOOL Brick7RopeModeling_LoadResources(Brick7RopeModeling_App *app);

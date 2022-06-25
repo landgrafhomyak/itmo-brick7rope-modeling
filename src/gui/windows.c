@@ -3,6 +3,39 @@
 #include "../app.h"
 #include "processors.h"
 
+#define CREATE_BUTTON(FIELD, NAME, POS, LABEL_NO1, LABEL_NO2)               \
+    app->tool_panel_stuff_windows.FIELD = CreateWindowExW(                  \
+    WS_EX_NOPARENTNOTIFY,                                                   \
+    L"Button",                                                              \
+    NAME,                                                                   \
+    WS_VISIBLE | WS_CHILD | BS_ICON,                                        \
+    app->button_size * POS,                                                  \
+    0,                                                                      \
+    app->button_size,                                                       \
+    app->button_size,                                                       \
+    app->tool_panel_window,                                                 \
+    NULL,                                                                   \
+    app->hInstance,                                                         \
+    NULL                                                                    \
+    );                                                                      \
+    if (app->tool_panel_stuff_windows.FIELD == NULL)                        \
+    { goto FREE_AND_ERR_ ## LABEL_NO1; }                                    \
+    if (                                                                    \
+        SendMessageW(                                                       \
+            app->tool_panel_stuff_windows.FIELD,                            \
+            BM_SETIMAGE,                                                    \
+            IMAGE_ICON,                                                     \
+            (LPARAM) (app->button_icons.FIELD)                              \
+        ) != 0                                                              \
+    )                                                                       \
+    { goto FREE_AND_ERR_ ## LABEL_NO2; }                                    \
+    ((void)0)
+
+#define DESTROY_BUTTON(FIELD, LABEL_NO)                     \
+    FREE_AND_ERR_ ## LABEL_NO:                              \
+    DestroyWindow(app->tool_panel_stuff_windows.FIELD);     \
+    ((void)0)
+
 BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
 {
     app->main_window = CreateWindowExW(
@@ -22,7 +55,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
     if (app->main_window == NULL)
     { goto FREE_AND_ERR_0; }
 
-    RECT tool_panel_window_rect = {.top=0, .left=0, .right=app->button_size * 12, .bottom=app->button_size};
+    RECT tool_panel_window_rect = {.top=0, .left=0, .right=app->button_size * 20, .bottom=app->button_size};
     DWORD tool_panel_window_style = WS_POPUP | WS_CAPTION;
 
     AdjustWindowRect(&tool_panel_window_rect, tool_panel_window_style, FALSE);
@@ -44,289 +77,31 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
     if (app->tool_panel_window == NULL)
     { goto FREE_AND_ERR_1; }
 
-    app->tool_panel_stuff_windows.cancel = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Cancel",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 0,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.cancel == NULL)
-    { goto FREE_AND_ERR_2; }
-
-    if (SendMessageW(app->tool_panel_stuff_windows.cancel, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.cancel)) != 0)
-    { goto FREE_AND_ERR_3; }
-
-    app->tool_panel_stuff_windows.reset = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Reset",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 1,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.reset == NULL)
-    { goto FREE_AND_ERR_3; }
-
-    if (SendMessageW(app->tool_panel_stuff_windows.reset, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.reset)) != 0)
-    { goto FREE_AND_ERR_4; }
-
-    app->tool_panel_stuff_windows.resume = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Resume",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 2,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.resume == NULL)
-    { goto FREE_AND_ERR_4; }
-
-    if (SendMessageW(app->tool_panel_stuff_windows.resume, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.resume)) != 0)
-    { goto FREE_AND_ERR_5; }
-
-    app->tool_panel_stuff_windows.pause = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Pause",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 3,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.pause == NULL)
-    { goto FREE_AND_ERR_5; }
-
-    if (SendMessageW(app->tool_panel_stuff_windows.pause, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.pause)) != 0)
-    { goto FREE_AND_ERR_6; }
-
-    app->tool_panel_stuff_windows.undo = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Undo",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 4,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.undo == NULL)
-    { goto FREE_AND_ERR_6; }
-
-    // if (SendMessageW(app->tool_panel_stuff_windows.undo, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.undo)) != 0)
-    // { goto FREE_AND_ERR_7; }
-
-    app->tool_panel_stuff_windows.redo = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Redo",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 5,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.redo == NULL)
-    { goto FREE_AND_ERR_7; }
-
-    // if (SendMessageW(app->tool_panel_stuff_windows.redo, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.redo)) != 0)
-    // { goto FREE_AND_ERR_8; }
-
-    app->tool_panel_stuff_windows.add_brick = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Add brick",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 6,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.add_brick == NULL)
-    { goto FREE_AND_ERR_8; }
-
-    if (SendMessageW(app->tool_panel_stuff_windows.add_brick, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.add_brick)) != 0)
-    { goto FREE_AND_ERR_9; }
-
-    app->tool_panel_stuff_windows.remove_brick = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Remove brick",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 7,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.remove_brick == NULL)
-    { goto FREE_AND_ERR_9; }
-
-    if (SendMessageW(app->tool_panel_stuff_windows.remove_brick, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.remove_brick)) != 0)
-    { goto FREE_AND_ERR_10; }
-
-    app->tool_panel_stuff_windows.add_rope = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Add rope",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 8,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.add_rope == NULL)
-    { goto FREE_AND_ERR_10; }
-
-    if (SendMessageW(app->tool_panel_stuff_windows.add_rope, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.add_rope)) != 0)
-    { goto FREE_AND_ERR_11; }
-
-    app->tool_panel_stuff_windows.remove_rope = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Remove rope",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 9,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.remove_rope == NULL)
-    { goto FREE_AND_ERR_11; }
-
-    if (SendMessageW(app->tool_panel_stuff_windows.remove_rope, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.remove_rope)) != 0)
-    { goto FREE_AND_ERR_12; }
-
-    app->tool_panel_stuff_windows.lock_brick = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Lock brick",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 10,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.lock_brick == NULL)
-    { goto FREE_AND_ERR_12; }
-
-    if (SendMessageW(app->tool_panel_stuff_windows.lock_brick, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.lock_brick)) != 0)
-    { goto FREE_AND_ERR_13; }
-
-    app->tool_panel_stuff_windows.unlock_brick = CreateWindowExW(
-            WS_EX_NOPARENTNOTIFY,
-            L"Button",
-            L"Unlock brick",
-            WS_VISIBLE | WS_CHILD | BS_ICON,
-            app->button_size * 11,
-            0,
-            app->button_size,
-            app->button_size,
-            app->tool_panel_window,
-            NULL,
-            app->hInstance,
-            NULL
-    );
-    if (app->tool_panel_stuff_windows.unlock_brick == NULL)
-    { goto FREE_AND_ERR_13; }
-
-    if (SendMessageW(app->tool_panel_stuff_windows.unlock_brick, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.unlock_brick)) != 0)
-    { goto FREE_AND_ERR_14; }
+    CREATE_BUTTON(save_capture, L"Save capture", 0, 1, 1);
+    CREATE_BUTTON(save_capture_as,L"Save capture as",1,  1, 1);
+    CREATE_BUTTON(load_capture, L"Load capture", 2, 1, 1);
+    CREATE_BUTTON(reset, L"Reset", 3, 1, 1);
+    CREATE_BUTTON(resume, L"Resume", 4, 1, 1);
+    CREATE_BUTTON(pause, L"Pause", 5, 1, 1);
+    CREATE_BUTTON(undo, L"Undo", 6, 1, 1);
+    CREATE_BUTTON(redo, L"Redo", 7, 1, 1);
+    CREATE_BUTTON(clear, L"Clear", 8, 1, 1);
+    CREATE_BUTTON(cancel_selection, L"Cancel selection", 9, 1, 1);
+    CREATE_BUTTON(select_brick, L"Select brick", 10, 1, 1);
+    CREATE_BUTTON(select_rope, L"Select rope", 11, 1, 1);
+    CREATE_BUTTON(cancel_action, L"Cancel action", 12, 1, 1);
+    CREATE_BUTTON(add_brick, L"Add brick", 13, 1, 1);
+    CREATE_BUTTON(remove_brick, L"Remove brick", 14, 1, 1);
+    CREATE_BUTTON(add_rope, L"Add rope", 15, 1, 1);
+    CREATE_BUTTON(remove_rope, L"Remove rope", 16, 1, 1);
+    CREATE_BUTTON(lock_brick, L"Lock brick", 17, 1, 1);
+    CREATE_BUTTON(unlock_brick, L"Unlock brick", 18, 1, 1);
+    CREATE_BUTTON(drag_brick, L"Drag brick", 19, 1, 1);
 
     ShowWindow(app->main_window, SW_SHOW);
     ShowWindow(app->tool_panel_window, SW_SHOW);
 
     return TRUE;
-    FREE_AND_ERR_14:
-    DestroyWindow(app->tool_panel_stuff_windows.unlock_brick);
-
-    FREE_AND_ERR_13:
-    DestroyWindow(app->tool_panel_stuff_windows.lock_brick);
-
-    FREE_AND_ERR_12:
-    DestroyWindow(app->tool_panel_stuff_windows.remove_rope);
-
-    FREE_AND_ERR_11:
-    DestroyWindow(app->tool_panel_stuff_windows.add_rope);
-
-    FREE_AND_ERR_10:
-    DestroyWindow(app->tool_panel_stuff_windows.remove_brick);
-
-    FREE_AND_ERR_9:
-    DestroyWindow(app->tool_panel_stuff_windows.add_brick);
-
-    FREE_AND_ERR_8:
-    DestroyWindow(app->tool_panel_stuff_windows.redo);
-
-    FREE_AND_ERR_7:
-    DestroyWindow(app->tool_panel_stuff_windows.undo);
-
-    FREE_AND_ERR_6:
-    DestroyWindow(app->tool_panel_stuff_windows.pause);
-
-    FREE_AND_ERR_5:
-    DestroyWindow(app->tool_panel_stuff_windows.resume);
-
-    FREE_AND_ERR_4:
-    DestroyWindow(app->tool_panel_stuff_windows.reset);
-
-    FREE_AND_ERR_3:
-    DestroyWindow(app->tool_panel_stuff_windows.cancel);
-
-    FREE_AND_ERR_2:
-    DestroyWindow(app->tool_panel_window);
-
     FREE_AND_ERR_1:
     DestroyWindow(app->main_window);
 

@@ -3,63 +3,14 @@
 #include "processors.h"
 #include "../threads.h"
 
-void Brick7RopeModeling_ToolPanel_SetButtonsState(Brick7RopeModeling_App *app)
+static void Brick7RopeModeling_UpdateEngineWithCurrentStack(Brick7RopeModeling_App *app)
 {
-    enum Brick7RopeModeling_AppAction_Type type = app->action.type;
-
-    switch (type)
-    {
-        case Brick7RopeModeling_AppAction_Type_VOID:
-            EnableWindow(app->tool_panel_stuff_windows.cancel, FALSE);
-            EnableWindow(app->tool_panel_stuff_windows.reset, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.resume, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.pause, FALSE);
-            break;
-        case Brick7RopeModeling_AppAction_Type_NEW_BRICK:
-            EnableWindow(app->tool_panel_stuff_windows.cancel, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.reset, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.resume, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.pause, FALSE);
-            break;
-        case Brick7RopeModeling_AppAction_Type_NEW_ROPE_0:
-            EnableWindow(app->tool_panel_stuff_windows.cancel, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.reset, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.resume, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.pause, FALSE);
-            break;
-        case Brick7RopeModeling_AppAction_Type_NEW_ROPE_1:
-            EnableWindow(app->tool_panel_stuff_windows.cancel, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.reset, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.resume, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.pause, FALSE);
-            break;
-        case Brick7RopeModeling_AppAction_Type_REMOVE_BRICK:
-            EnableWindow(app->tool_panel_stuff_windows.cancel, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.reset, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.resume, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.pause, FALSE);
-            break;
-        case Brick7RopeModeling_AppAction_Type_REMOVE_ROPE:
-            EnableWindow(app->tool_panel_stuff_windows.cancel, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.reset, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.resume, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.pause, FALSE);
-            break;
-        case Brick7RopeModeling_AppAction_Type_DRAG_BRICK:
-            EnableWindow(app->tool_panel_stuff_windows.cancel, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.reset, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.resume, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.pause, FALSE);
-            break;
-        case Brick7RopeModeling_AppAction_Type_RUNNING:
-            EnableWindow(app->tool_panel_stuff_windows.cancel, FALSE);
-            EnableWindow(app->tool_panel_stuff_windows.reset, TRUE);
-            EnableWindow(app->tool_panel_stuff_windows.resume, FALSE);
-            EnableWindow(app->tool_panel_stuff_windows.pause, TRUE);
-            break;
-    }
+    EnterCriticalSection(&(app->engine_mutex));
+    Brick7RopeModeling_Scene_Copy(Brick7RopeModeling_Stack_GetCurrent(&(app->stack)), &(app->engine_out));
+    LeaveCriticalSection(&(app->engine_mutex));
 }
 
+static void Brick7RopeModeling_ToolPanel_Clear(Brick7RopeModeling_App *app);
 
 LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
@@ -83,83 +34,80 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
         }
         case WM_MOUSEMOVE:
             EnterCriticalSection(&(app->action_mutex));
-            switch (app->action.type)
+            switch (app->action.action_type)
             {
-                case Brick7RopeModeling_AppAction_Type_VOID:
+                case Brick7RopeModeling_AppState_ActionType_VOID:
                     break;
-                case Brick7RopeModeling_AppAction_Type_NEW_BRICK:
-                    app->action.value.new_brick.x = LOWORD(lParam);
-                    app->action.value.new_brick.y = HIWORD(lParam);
+                case Brick7RopeModeling_AppState_ActionType_ADD_BRICK:
+                    app->action.action_value.new_brick.x = LOWORD(lParam);
+                    app->action.action_value.new_brick.y = HIWORD(lParam);
                     break;
-                case Brick7RopeModeling_AppAction_Type_NEW_ROPE_0:
-                    app->action.value.new_rope_0.x1 = LOWORD(lParam);
-                    app->action.value.new_rope_0.y1 = HIWORD(lParam);
+                case Brick7RopeModeling_AppState_ActionType_NEW_ROPE_0:
+                    app->action.action_value.new_rope_0.x1 = LOWORD(lParam);
+                    app->action.action_value.new_rope_0.y1 = HIWORD(lParam);
                     break;
-                case Brick7RopeModeling_AppAction_Type_NEW_ROPE_1:
-                    app->action.value.new_rope_1.x2 = LOWORD(lParam);
-                    app->action.value.new_rope_1.y2 = HIWORD(lParam);
+                case Brick7RopeModeling_AppState_ActionType_NEW_ROPE_1:
+                    app->action.action_value.new_rope_1.x2 = LOWORD(lParam);
+                    app->action.action_value.new_rope_1.y2 = HIWORD(lParam);
                     break;
-                case Brick7RopeModeling_AppAction_Type_REMOVE_BRICK:
-                    app->action.value.remove_brick.x = LOWORD(lParam);
-                    app->action.value.remove_brick.y = HIWORD(lParam);
+                case Brick7RopeModeling_AppState_ActionType_REMOVE_BRICK:
+                    app->action.action_value.remove_brick.x = LOWORD(lParam);
+                    app->action.action_value.remove_brick.y = HIWORD(lParam);
                     break;
-                case Brick7RopeModeling_AppAction_Type_REMOVE_ROPE:
-                    app->action.value.remove_rope.x = LOWORD(lParam);
-                    app->action.value.remove_rope.y = HIWORD(lParam);
+                case Brick7RopeModeling_AppState_ActionType_REMOVE_ROPE:
+                    app->action.action_value.remove_rope.x = LOWORD(lParam);
+                    app->action.action_value.remove_rope.y = HIWORD(lParam);
                     break;
-                case Brick7RopeModeling_AppAction_Type_DRAG_BRICK:
-                    app->action.value.brick_drag.x = LOWORD(lParam);
-                    app->action.value.brick_drag.y = HIWORD(lParam);
+                case Brick7RopeModeling_AppState_ActionType_DRAG_BRICK:
+                    app->action.action_value.brick_drag.x = LOWORD(lParam);
+                    app->action.action_value.brick_drag.y = HIWORD(lParam);
                     break;
-                case Brick7RopeModeling_AppAction_Type_RUNNING:
+                case Brick7RopeModeling_AppState_ActionType_RUNNING:
                     break;
             }
             LeaveCriticalSection(&(app->action_mutex));
             return 0;
         case WM_LBUTTONUP:
             EnterCriticalSection(&(app->action_mutex));
-            switch (app->action.type)
+            switch (app->action.action_type)
             {
-                case Brick7RopeModeling_AppAction_Type_VOID:
+                case Brick7RopeModeling_AppState_ActionType_VOID:
                     break;
-                case Brick7RopeModeling_AppAction_Type_NEW_BRICK:
+                case Brick7RopeModeling_AppState_ActionType_ADD_BRICK:
                     Brick7RopeModeling_Stack_Add(&(app->stack));
                     Brick7RopeModeling_Scene_AddBrick(
                             Brick7RopeModeling_Stack_GetCurrent(&(app->stack)),
                             (Brick7RopeModeling_Brick) {
-                                    .x = app->action.value.new_brick.x,
-                                    .y = app->action.value.new_brick.y,
+                                    .x = app->action.action_value.new_brick.x,
+                                    .y = app->action.action_value.new_brick.y,
                                     .is_locked = FALSE
                             }
                     );
 
-                    EnterCriticalSection(&(app->engine_mutex));
-                    Brick7RopeModeling_Scene_Finalize(&(app->engine_out));
-                    Brick7RopeModeling_Scene_Copy(Brick7RopeModeling_Stack_GetCurrent(&(app->stack)), &(app->engine_out));
-                    LeaveCriticalSection(&(app->engine_mutex));
+                    Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
 
                     break;
-                case Brick7RopeModeling_AppAction_Type_NEW_ROPE_0:
-                    app->action.value.new_rope_0.x1 = LOWORD(lParam);
-                    app->action.value.new_rope_0.y1 = HIWORD(lParam);
+                case Brick7RopeModeling_AppState_ActionType_NEW_ROPE_0:
+                    app->action.action_value.new_rope_0.x1 = LOWORD(lParam);
+                    app->action.action_value.new_rope_0.y1 = HIWORD(lParam);
                     break;
-                case Brick7RopeModeling_AppAction_Type_NEW_ROPE_1:
-                    app->action.value.new_rope_1.x2 = LOWORD(lParam);
-                    app->action.value.new_rope_1.y2 = HIWORD(lParam);
+                case Brick7RopeModeling_AppState_ActionType_NEW_ROPE_1:
+                    app->action.action_value.new_rope_1.x2 = LOWORD(lParam);
+                    app->action.action_value.new_rope_1.y2 = HIWORD(lParam);
                     break;
-                case Brick7RopeModeling_AppAction_Type_REMOVE_BRICK:
-                    app->action.value.remove_brick.x = LOWORD(lParam);
-                    app->action.value.remove_brick.y = HIWORD(lParam);
+                case Brick7RopeModeling_AppState_ActionType_REMOVE_BRICK:
+                    app->action.action_value.remove_brick.x = LOWORD(lParam);
+                    app->action.action_value.remove_brick.y = HIWORD(lParam);
                     break;
-                case Brick7RopeModeling_AppAction_Type_REMOVE_ROPE:
-                    app->action.value.remove_rope.x = LOWORD(lParam);
-                    app->action.value.remove_rope.y = HIWORD(lParam);
+                case Brick7RopeModeling_AppState_ActionType_REMOVE_ROPE:
+                    app->action.action_value.remove_rope.x = LOWORD(lParam);
+                    app->action.action_value.remove_rope.y = HIWORD(lParam);
                     break;
-                case Brick7RopeModeling_AppAction_Type_DRAG_BRICK:
-                    app->action.value.brick_drag.x = LOWORD(lParam);
-                    app->action.value.brick_drag.y = HIWORD(lParam);
+                case Brick7RopeModeling_AppState_ActionType_DRAG_BRICK:
+                    app->action.action_value.brick_drag.x = LOWORD(lParam);
+                    app->action.action_value.brick_drag.y = HIWORD(lParam);
                     break;
-                case Brick7RopeModeling_AppAction_Type_RUNNING:
+                case Brick7RopeModeling_AppState_ActionType_RUNNING:
                     break;
             }
             LeaveCriticalSection(&(app->action_mutex));
@@ -193,12 +141,11 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
 
             Brick7RopeModeling_SceneArena_Init(&(app->scene_arena), GetProcessHeap());
             Brick7RopeModeling_Stack_Init(&(app->stack));
-            Brick7RopeModeling_SceneArena_LinkScene(&(app->scene_arena), Brick7RopeModeling_Stack_GetCurrent(&(app->stack)), 1, 1);
-            Brick7RopeModeling_Scene_Init(&(app->engine_out));
+            Brick7RopeModeling_ToolPanel_Clear(app);
+            EnterCriticalSection(&(app->engine_state));
 
-
-            app->engine_thread = CreateThread(NULL, 0, Brick7RopeModeling_EngineThreadMain, app, 0, NULL);
-            app->render_thread = CreateThread(NULL, 0, Brick7RopeModeling_RenderThreadMain, app, 0, NULL);
+            app->engine_thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) Brick7RopeModeling_EngineThreadMain, app, 0, NULL);
+            app->render_thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) Brick7RopeModeling_RenderThreadMain, app, 0, NULL);
 
             return 0;
         }
@@ -211,6 +158,20 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
 
 }
 
+
+static void Brick7RopeModeling_ToolPanel_Clear(Brick7RopeModeling_App *app)
+{
+    Brick7RopeModeling_SceneArena_LinkScene(&(app->scene_arena), Brick7RopeModeling_Stack_GetCurrent(&(app->stack)), 1, 1);
+    Brick7RopeModeling_Scene_Init(&(app->engine_out));
+}
+
+static void Brick7RopeModeling_ToolPanel_CancelSelection(Brick7RopeModeling_App *app)
+{}
+
+
+#define ifButton(FIELD) if ((HWND) lParam == app->tool_panel_stuff_windows.FIELD)
+#define elifButton(FIELD) else ifButton(FIELD)
+
 LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
     Brick7RopeModeling_App *app = (Brick7RopeModeling_App *) (GetWindowLongPtrW(hWnd, 0));
@@ -218,151 +179,72 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
     switch (Msg)
     {
         case WM_COMMAND:
-            if ((HWND) lParam == app->tool_panel_stuff_windows.cancel)
+            ifButton(save_capture)
+            {}
+            elifButton(save_capture_as)
+            {}
+            elifButton(load_capture)
+            {}
+            elifButton(reset)
             {
-                EnterCriticalSection(&(app->action_mutex));
-                switch (app->action.type)
-                {
-                    case Brick7RopeModeling_AppAction_Type_VOID:
-                    case Brick7RopeModeling_AppAction_Type_NEW_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_0:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_1:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_ROPE:
-                    case Brick7RopeModeling_AppAction_Type_DRAG_BRICK:
-                        app->action.type = Brick7RopeModeling_AppAction_Type_VOID;
-                        break;
-                    case Brick7RopeModeling_AppAction_Type_RUNNING:
-                        break;
-                }
-                LeaveCriticalSection(&(app->action_mutex));
+                Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
             }
-            else if ((HWND) lParam == app->tool_panel_stuff_windows.reset)
+            elifButton(resume)
             {
+                LeaveCriticalSection(&(app->engine_state));
+            }
+            elifButton(pause)
+            {
+                EnterCriticalSection(&(app->engine_state));
+            }
+            elifButton(undo)
+            {
+                Brick7RopeModeling_Stack_Undo(&(app->stack));
+                Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
+            }
+            elifButton(redo)
+            {
+                Brick7RopeModeling_Stack_Redo(&(app->stack));
+                Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
+            }
+            elifButton(clear)
+            {
+                Brick7RopeModeling_Stack_Add(&(app->stack));
+                Brick7RopeModeling_ToolPanel_CancelSelection(app);
+                Brick7RopeModeling_ToolPanel_Clear(app);
+            }
+            elifButton(cancel_selection)
+            {
+                Brick7RopeModeling_ToolPanel_CancelSelection(app);
+            }
+            elifButton(select_brick)
+            {}
+            elifButton(select_rope)
+            {}
+            elifButton(cancel_action)
+            {}
+            elifButton(add_brick)
+            {}
+            elifButton(remove_brick)
+            {}
+            elifButton(add_rope)
+            {}
+            elifButton(remove_rope)
+            {}
 
-                // todo
-            }
-            else if ((HWND) lParam == app->tool_panel_stuff_windows.resume)
-            {
-                EnterCriticalSection(&(app->action_mutex));
-                switch (app->action.type)
-                {
+            elifButton(lock_brick)
+            {}
 
-                    case Brick7RopeModeling_AppAction_Type_VOID:
-                    case Brick7RopeModeling_AppAction_Type_NEW_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_0:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_1:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_ROPE:
-                    case Brick7RopeModeling_AppAction_Type_DRAG_BRICK:
-                        app->action.type = Brick7RopeModeling_AppAction_Type_RUNNING;
-                        break;
-                    case Brick7RopeModeling_AppAction_Type_RUNNING:
-                        break;
-                }
-                LeaveCriticalSection(&(app->action_mutex));
-            }
-            else if ((HWND) lParam == app->tool_panel_stuff_windows.pause)
-            {
-                EnterCriticalSection(&(app->action_mutex));
-                switch (app->action.type)
-                {
+            elifButton(unlock_brick)
+            {}
 
-                    case Brick7RopeModeling_AppAction_Type_VOID:
-                    case Brick7RopeModeling_AppAction_Type_NEW_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_0:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_1:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_ROPE:
-                    case Brick7RopeModeling_AppAction_Type_DRAG_BRICK:
-                        break;
-                    case Brick7RopeModeling_AppAction_Type_RUNNING:
-                        app->action.type = Brick7RopeModeling_AppAction_Type_VOID;
-                        break;
-                }
-                LeaveCriticalSection(&(app->action_mutex));
-            }
-            else if ((HWND) lParam == app->tool_panel_stuff_windows.add_brick)
-            {
-                EnterCriticalSection(&(app->action_mutex));
-                switch (app->action.type)
-                {
+            elifButton(drag_brick)
+            {}
 
-                    case Brick7RopeModeling_AppAction_Type_VOID:
-                    case Brick7RopeModeling_AppAction_Type_NEW_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_0:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_1:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_ROPE:
-                    case Brick7RopeModeling_AppAction_Type_DRAG_BRICK:
-                        app->action.type = Brick7RopeModeling_AppAction_Type_NEW_BRICK;
-                        break;
-                    case Brick7RopeModeling_AppAction_Type_RUNNING:
-                        break;
-                }
-                app->action.value.new_brick = (struct Brick7RopeModeling_AppAction_NewBrick) {.x = 0, .y=0};
-                LeaveCriticalSection(&(app->action_mutex));
-            }
-            else if ((HWND) lParam == app->tool_panel_stuff_windows.remove_brick)
-            {
-                EnterCriticalSection(&(app->action_mutex));
-                switch (app->action.type)
-                {
-                    case Brick7RopeModeling_AppAction_Type_VOID:
-                    case Brick7RopeModeling_AppAction_Type_NEW_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_0:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_1:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_ROPE:
-                    case Brick7RopeModeling_AppAction_Type_DRAG_BRICK:
-                        app->action.type = Brick7RopeModeling_AppAction_Type_REMOVE_BRICK;
-                        break;
-                    case Brick7RopeModeling_AppAction_Type_RUNNING:
-                        break;
-                }
-                app->action.value.remove_brick = (struct Brick7RopeModeling_AppAction_RemoveBrick) {.x = 0, .y = 0};
-                LeaveCriticalSection(&(app->action_mutex));
-            }
-            else if ((HWND) lParam == app->tool_panel_stuff_windows.add_rope)
-            {
-                EnterCriticalSection(&(app->action_mutex));
-                switch (app->action.type)
-                {
-                    case Brick7RopeModeling_AppAction_Type_VOID:
-                    case Brick7RopeModeling_AppAction_Type_NEW_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_0:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_1:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_ROPE:
-                    case Brick7RopeModeling_AppAction_Type_DRAG_BRICK:
-                        app->action.type = Brick7RopeModeling_AppAction_Type_NEW_ROPE_0;
-                        break;
-                    case Brick7RopeModeling_AppAction_Type_RUNNING:
-                        break;
-                }
-                app->action.value.new_rope_0 = (struct Brick7RopeModeling_AppAction_NewRope0) {.x1 = 0, .y1 = 0};
-                LeaveCriticalSection(&(app->action_mutex));
-            }
-            else if ((HWND) lParam == app->tool_panel_stuff_windows.remove_rope)
-            {
-                EnterCriticalSection(&(app->action_mutex));
-                switch (app->action.type)
-                {
-                    case Brick7RopeModeling_AppAction_Type_VOID:
-                    case Brick7RopeModeling_AppAction_Type_NEW_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_0:
-                    case Brick7RopeModeling_AppAction_Type_NEW_ROPE_1:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_BRICK:
-                    case Brick7RopeModeling_AppAction_Type_REMOVE_ROPE:
-                    case Brick7RopeModeling_AppAction_Type_DRAG_BRICK:
-                        app->action.type = Brick7RopeModeling_AppAction_Type_REMOVE_ROPE;
-                        break;
-                    case Brick7RopeModeling_AppAction_Type_RUNNING:
-                        break;
-                }
-                app->action.value.remove_rope = (struct Brick7RopeModeling_AppAction_RemoveRope) {.x = 0, .y = 0};
-                LeaveCriticalSection(&(app->action_mutex));
-            }
             return 0;
         case WM_CREATE:
         {

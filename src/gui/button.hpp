@@ -15,7 +15,7 @@ public:
         DISABLED_ON_SPECIFIED_STATES,
     };
 private:
-    std::initializer_list<Brick7RopeModeling_AppAction::Brick7RopeModeling_AppAction_Type> states;
+    std::initializer_list<Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType> states;
     IsEnabledOnStates is_enabled_on_states;
 
     HICON icon = nullptr;
@@ -26,7 +26,7 @@ private:
 
 public:
     constexpr inline Brick7RopeModeling_WinButton(
-            std::initializer_list<Brick7RopeModeling_AppAction::Brick7RopeModeling_AppAction_Type> states,
+            std::initializer_list<Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType> states,
             IsEnabledOnStates is_enabled_on_states,
             HICON icon,
             HWND reference,
@@ -45,7 +45,7 @@ private:
     wchar_t const *button_name;
     unsigned short size;
 
-    std::initializer_list<Brick7RopeModeling_AppAction::Brick7RopeModeling_AppAction_Type> states;
+    std::initializer_list<Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType> states;
     Brick7RopeModeling_WinButton::IsEnabledOnStates is_enabled_on_states;
 public:
     constexpr inline Brick7RopeModeling_WinButtonFactory(
@@ -53,7 +53,7 @@ public:
             wchar_t const *button_name,
             unsigned short size,
             Brick7RopeModeling_WinButton::IsEnabledOnStates is_enabled_on_states,
-            std::initializer_list<Brick7RopeModeling_AppAction::Brick7RopeModeling_AppAction_Type> states
+            std::initializer_list<Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType> states
     ) noexcept: icon_resource_name(icon_resource_name), button_name(button_name), size(size), states(states), is_enabled_on_states(is_enabled_on_states)
     {}
 

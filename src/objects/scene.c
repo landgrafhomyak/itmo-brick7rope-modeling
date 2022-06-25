@@ -20,6 +20,9 @@ BOOL Brick7RopeModeling_Scene_Init(Brick7RopeModeling_Scene *self)
 
 Brick7RopeModeling_Scene *Brick7RopeModeling_Scene_Copy(Brick7RopeModeling_Scene *self, Brick7RopeModeling_Scene *dst)
 {
+    if (dst->owner != NULL)
+    { Brick7RopeModeling_Scene_Finalize(dst); }
+
     if (self->owner != NULL)
     {
         Brick7RopeModeling_SceneArena_LinkScene(self->owner, dst, self->bricks_count + 1, self->ropes_count + 1);

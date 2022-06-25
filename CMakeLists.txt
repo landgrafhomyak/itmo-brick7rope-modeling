@@ -21,7 +21,6 @@ add_executable(
         src/gui/mainloop.c
         src/gui/windows.c
         src/gui/processors.h
-        src/gui/main_window_data.h
         src/gui/render.cpp
         src/objects/stack.h
         src/objects/stack.c

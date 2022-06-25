@@ -116,9 +116,33 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                     break;
 
                 case Brick7RopeModeling_AppState_ActionType_DRAG_BRICK:
+                    if (!app->state.action_value.drag_brick.hold)
+                    { app->state.action_value.drag_brick.brick_index = Brick7RopeModeling_GetClosestBrick(app, LOWORD(lParam), HIWORD(lParam)); }
                     app->state.action_value.drag_brick.x = LOWORD(lParam);
                     app->state.action_value.drag_brick.y = HIWORD(lParam);
                     break;
+
+                default:
+                    break;
+            }
+            LeaveCriticalSection(&(app->state.mutex));
+            return 0;
+
+        case WM_LBUTTONDOWN:
+            EnterCriticalSection(&(app->state.mutex));
+            switch (app->state.action_type)
+            {
+                case Brick7RopeModeling_AppState_ActionType_DRAG_BRICK:
+                {
+                    app->state.action_value.drag_brick.brick_index = Brick7RopeModeling_GetClosestBrick(app, app->state.action_value.drag_brick.x, app->state.action_value.drag_brick.y);
+                    if (app->state.action_value.drag_brick.brick_index != Brick7RopeModeling_INVALID_INDEX)
+                    {
+                        app->state.action_value.drag_brick.hold = TRUE;
+                        app->state.action_value.drag_brick.ox = ((INT) Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.action_value.drag_brick.brick_index].x) - app->state.action_value.drag_brick.x;
+                        app->state.action_value.drag_brick.oy = ((INT) Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.action_value.drag_brick.brick_index].y) - app->state.action_value.drag_brick.y;
+                    }
+                    break;
+                }
 
                 default:
                     break;
@@ -169,6 +193,7 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                         app->state.action_value.add_rope_1.brick2_index = Brick7RopeModeling_GetClosestBrick(app, app->state.action_value.add_rope_1.x2, app->state.action_value.add_rope_1.y2);
                     }
                     break;
+
                 case Brick7RopeModeling_AppState_ActionType_ADD_ROPE_1:
                     if (app->state.action_value.add_rope_1.brick2_index != Brick7RopeModeling_INVALID_INDEX)
                     {
@@ -184,8 +209,18 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                         app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
                     }
                     break;
+
                 case Brick7RopeModeling_AppState_ActionType_DRAG_BRICK:
+                    if (app->state.action_value.drag_brick.brick_index != Brick7RopeModeling_INVALID_INDEX)
+                    {
+                        Brick7RopeModeling_Stack_Add(&(app->stack));
+                        Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.action_value.drag_brick.brick_index].x = app->state.action_value.drag_brick.x + app->state.action_value.drag_brick.ox;
+                        Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.action_value.drag_brick.brick_index].y = app->state.action_value.drag_brick.y + app->state.action_value.drag_brick.oy;
+                        Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                        app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                    }
                     break;
+
                 default:
                     break;
             }
@@ -413,7 +448,14 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 LeaveCriticalSection(&(app->state.mutex));
             }
             elifButton(drag_brick)
-            {}
+            {
+                EnterCriticalSection(&(app->state.mutex));
+                app->state.action_type = Brick7RopeModeling_AppState_ActionType_DRAG_BRICK;
+                Brick7RopeModeling_GetClientMousePos(hWnd, &(app->state.action_value.drag_brick.x), &(app->state.action_value.drag_brick.y));
+                app->state.action_value.drag_brick.brick_index = Brick7RopeModeling_GetClosestBrick(app, app->state.action_value.drag_brick.x, app->state.action_value.drag_brick.y);
+                app->state.action_value.drag_brick.hold = FALSE;
+                LeaveCriticalSection(&(app->state.mutex));
+            }
 
             return 0;
         case WM_CREATE:

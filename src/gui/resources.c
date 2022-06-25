@@ -41,26 +41,26 @@ BOOL Brick7RopeModeling_LoadResources(Brick7RopeModeling_App *app)
     return TRUE;
 
 
-DESTROY_BUTTON_ICON_ON_FAIL(drag_brick, 21);
-DESTROY_BUTTON_ICON_ON_FAIL(unlock_brick, 20);
-DESTROY_BUTTON_ICON_ON_FAIL(lock_brick, 19);
-DESTROY_BUTTON_ICON_ON_FAIL(remove_rope, 18);
-DESTROY_BUTTON_ICON_ON_FAIL(add_rope, 17);
-DESTROY_BUTTON_ICON_ON_FAIL(remove_brick, 16);
-DESTROY_BUTTON_ICON_ON_FAIL(add_brick, 15);
-DESTROY_BUTTON_ICON_ON_FAIL(cancel_action, 14);
-DESTROY_BUTTON_ICON_ON_FAIL(select_rope, 13);
-DESTROY_BUTTON_ICON_ON_FAIL(select_brick, 12);
-DESTROY_BUTTON_ICON_ON_FAIL(cancel_selection, 11);
-DESTROY_BUTTON_ICON_ON_FAIL(clear, 10);
-DESTROY_BUTTON_ICON_ON_FAIL(redo, 9);
-DESTROY_BUTTON_ICON_ON_FAIL(undo, 8);
-DESTROY_BUTTON_ICON_ON_FAIL(pause, 7);
-DESTROY_BUTTON_ICON_ON_FAIL(resume, 6);
-DESTROY_BUTTON_ICON_ON_FAIL(reset, 5);
-DESTROY_BUTTON_ICON_ON_FAIL(load_capture, 4);
-DESTROY_BUTTON_ICON_ON_FAIL(save_capture_as, 3);
-DESTROY_BUTTON_ICON_ON_FAIL(save_capture, 2);
+    DESTROY_BUTTON_ICON_ON_FAIL(drag_brick, 21);
+    DESTROY_BUTTON_ICON_ON_FAIL(unlock_brick, 20);
+    DESTROY_BUTTON_ICON_ON_FAIL(lock_brick, 19);
+    DESTROY_BUTTON_ICON_ON_FAIL(remove_rope, 18);
+    DESTROY_BUTTON_ICON_ON_FAIL(add_rope, 17);
+    DESTROY_BUTTON_ICON_ON_FAIL(remove_brick, 16);
+    DESTROY_BUTTON_ICON_ON_FAIL(add_brick, 15);
+    DESTROY_BUTTON_ICON_ON_FAIL(cancel_action, 14);
+    DESTROY_BUTTON_ICON_ON_FAIL(select_rope, 13);
+    DESTROY_BUTTON_ICON_ON_FAIL(select_brick, 12);
+    DESTROY_BUTTON_ICON_ON_FAIL(cancel_selection, 11);
+    DESTROY_BUTTON_ICON_ON_FAIL(clear, 10);
+    DESTROY_BUTTON_ICON_ON_FAIL(redo, 9);
+    DESTROY_BUTTON_ICON_ON_FAIL(undo, 8);
+    DESTROY_BUTTON_ICON_ON_FAIL(pause, 7);
+    DESTROY_BUTTON_ICON_ON_FAIL(resume, 6);
+    DESTROY_BUTTON_ICON_ON_FAIL(reset, 5);
+    DESTROY_BUTTON_ICON_ON_FAIL(load_capture, 4);
+    DESTROY_BUTTON_ICON_ON_FAIL(save_capture_as, 3);
+    DESTROY_BUTTON_ICON_ON_FAIL(save_capture, 2);
 
     FREE_AND_ERR_1:
     DestroyIcon(app->main_icon);

@@ -79,6 +79,7 @@ struct Brick7RopeModeling_AppState
             int y;
             int ox;
             int oy;
+            BOOL hold;
         } drag_brick;
     } action_value;
 

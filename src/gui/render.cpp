@@ -469,6 +469,63 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
                 );
                 break;
 
+            case Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType_DRAG_BRICK:
+                if (app->state.action_value.drag_brick.brick_index != Brick7RopeModeling_INVALID_INDEX)
+                {
+                    Brick7RopeModeling_DrawLine(
+                            canvas,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y + app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y - app->brick_size,
+                            RGB(0, 0, 255)
+                    );
+                    Brick7RopeModeling_DrawLine(
+                            canvas,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y - app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y - app->brick_size,
+                            RGB(0, 0, 255)
+                    );
+                    Brick7RopeModeling_DrawLine(
+                            canvas,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y - app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y + app->brick_size,
+                            RGB(0, 0, 255)
+                    );
+                    Brick7RopeModeling_DrawLine(
+                            canvas,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y + app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y + app->brick_size,
+                            RGB(0, 0, 255)
+                    );
+                }
+                if (app->state.action_value.drag_brick.hold)
+                {
+                    Brick7RopeModeling_DrawLine(
+                            canvas,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x,
+                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y,
+                            app->state.action_value.drag_brick.x + app->state.action_value.drag_brick.ox,
+                            app->state.action_value.drag_brick.y + app->state.action_value.drag_brick.oy,
+                            RGB(0, 0, 255)
+                    );
+                    Brick7RopeModeling_DrawCircle<Brick7RopeModeling_RawBufferCanvas<DWORD>>(
+                            canvas,
+                            state.action_value.drag_brick.x + app->state.action_value.drag_brick.ox,
+                            state.action_value.drag_brick.y + app->state.action_value.drag_brick.oy,
+                            app->brick_size,
+                            RGB(0, 0, 255)
+                    );
+                }
+                break;
+
+
             default:
                 break;
         }

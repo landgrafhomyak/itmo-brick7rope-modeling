@@ -67,6 +67,7 @@ typedef struct Brick7RopeModeling_App
 {
     /* Configuration */
     const unsigned short button_size;
+    const unsigned short brick_size;
 
     /* Predefined handlers */
     HINSTANCE hInstance;
@@ -160,7 +161,7 @@ void Brick7RopeModeling_UnRegisterWindowClasses(Brick7RopeModeling_App *app);
 BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app);
 
 # ifdef __cplusplus
-};
+}
 # endif
 
 #endif /* Brick7RopeModeling_APP_H */

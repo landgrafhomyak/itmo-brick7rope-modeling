@@ -4,7 +4,9 @@
 # ifdef __cplusplus
 #  include <cstddef>
 # else
+
 #  include <stddef.h>
+
 # endif
 
 # include <windows.h>
@@ -36,6 +38,8 @@ Brick7RopeModeling_Scene *Brick7RopeModeling_Stack_Redo(Brick7RopeModeling_Stack
 BOOL Brick7RopeModeling_Stack_CanUndo(Brick7RopeModeling_Stack *self);
 
 BOOL Brick7RopeModeling_Stack_CanRedo(Brick7RopeModeling_Stack *self);
+
+Brick7RopeModeling_Scene *Brick7RopeModeling_Stack_GetCurrent(Brick7RopeModeling_Stack *self);
 
 # ifdef __cplusplus
 };

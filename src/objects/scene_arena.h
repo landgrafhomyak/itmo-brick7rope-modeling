@@ -25,6 +25,7 @@ struct Brick7RopeModeling_SceneArena_NodeHead
 typedef struct Brick7RopeModeling_SceneArena
 {
     HANDLE heap;
+    CRITICAL_SECTION access_mutex;
     struct Brick7RopeModeling_SceneArena_NodeHead *nodes;
 } Brick7RopeModeling_SceneArena;
 
@@ -37,6 +38,8 @@ BOOL Brick7RopeModeling_SceneArena_LinkScene(Brick7RopeModeling_SceneArena *self
 void Brick7RopeModeling_SceneArena_UnLinkScene(Brick7RopeModeling_SceneArena *self, struct Brick7RopeModeling_Scene *scene);
 
 void Brick7RopeModeling_SceneArena_Finalize(Brick7RopeModeling_SceneArena *self);
+
+int Brick7RopeModeling_SceneArena_GetNodesCount(Brick7RopeModeling_SceneArena *self);
 
 # ifdef __cplusplus
 };

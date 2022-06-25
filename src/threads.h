@@ -8,8 +8,9 @@
 extern "C" {
 # endif
 
-DWORD Brick7RopeModeling_EngineThreadMain(Brick7RopeModeling_App *app);
-DWORD Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_App *app);
+DWORD DECLSPEC_NORETURN Brick7RopeModeling_EngineThreadMain(Brick7RopeModeling_App *app);
+
+DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_App *app);
 
 # ifdef __cplusplus
 };

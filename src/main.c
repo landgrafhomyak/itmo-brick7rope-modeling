@@ -5,7 +5,7 @@
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-    Brick7RopeModeling_App app = {.button_size = 32};
+    Brick7RopeModeling_App app = {.button_size = 32, .brick_size=16};
     int ret;
 
     app.hInstance = hInstance;

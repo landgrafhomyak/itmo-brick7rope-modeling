@@ -284,8 +284,6 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
     if (SendMessageW(app->tool_panel_stuff_windows.unlock_brick, BM_SETIMAGE, IMAGE_ICON, (LPARAM) (app->button_icons.unlock_brick)) != 0)
     { goto FREE_AND_ERR_14; }
 
-    Brick7RopeModeling_ToolPanel_SetButtonsState(app);
-
     ShowWindow(app->main_window, SW_SHOW);
     ShowWindow(app->tool_panel_window, SW_SHOW);
 

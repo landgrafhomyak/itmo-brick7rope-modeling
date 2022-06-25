@@ -73,3 +73,8 @@ BOOL Brick7RopeModeling_Stack_CanRedo(Brick7RopeModeling_Stack *self)
 {
     return self->current != self->end;
 }
+
+Brick7RopeModeling_Scene *Brick7RopeModeling_Stack_GetCurrent(Brick7RopeModeling_Stack *self)
+{
+    return &(self->buffer[self->current]);
+}

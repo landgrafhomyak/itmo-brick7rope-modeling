@@ -123,6 +123,20 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                 case Brick7RopeModeling_AppAction_Type_VOID:
                     break;
                 case Brick7RopeModeling_AppAction_Type_NEW_BRICK:
+                    Brick7RopeModeling_Stack_Add(&(app->stack));
+                    Brick7RopeModeling_Scene_AddBrick(
+                            Brick7RopeModeling_Stack_GetCurrent(&(app->stack)),
+                            (Brick7RopeModeling_Brick) {
+                                    .x = app->action.value.new_brick.x,
+                                    .y = app->action.value.new_brick.y,
+                                    .is_locked = FALSE
+                            }
+                    );
+
+                    EnterCriticalSection(&(app->engine_mutex));
+                    Brick7RopeModeling_Scene_Finalize(&(app->engine_out));
+                    Brick7RopeModeling_Scene_Copy(Brick7RopeModeling_Stack_GetCurrent(&(app->stack)), &(app->engine_out));
+                    LeaveCriticalSection(&(app->engine_mutex));
 
                     break;
                 case Brick7RopeModeling_AppAction_Type_NEW_ROPE_0:
@@ -151,52 +165,11 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
             LeaveCriticalSection(&(app->action_mutex));
             return 0;
         case WM_SIZE:
+            EnterCriticalSection(&(app->render_access_mutex));
             app->main_window_width = LOWORD(lParam);
             app->main_window_height = HIWORD(lParam);
+            LeaveCriticalSection(&(app->render_access_mutex));
             return 0;
-#if 0
-            {
-                EnterCriticalSection(&(app->render_access_mutex));
-
-                if (app->main_window_width * app->main_window_height < LOWORD(lParam) * HIWORD(lParam))
-                {
-                    if (app->render_accessories.bitmap1 != NULL)
-                    { DeleteObject(app->render_accessories.bitmap1); }
-
-                    if (app->render_accessories.bitmap2 != NULL)
-                    { DeleteObject(app->render_accessories.bitmap2); }
-                }
-
-                if (app->main_window_data.bitmap_data == NULL || )
-                {
-                    if (app->main_window_data.bitmap_data != NULL)
-                    {
-                        LocalFree(app->main_window_data.bitmap_data);
-                    }
-                    app->main_window_data.bitmap_data = LocalAlloc(LMEM_FIXED, LOWORD(lParam) * HIWORD(lParam) * 4);
-                }
-
-
-
-                static BITMAPINFOHEADER bmih;
-                bmih.biSize = sizeof(BITMAPINFOHEADER);
-                bmih.biWidth = (LONG) (app->main_window_width);
-                bmih.biHeight = -(LONG) (app->main_window_height);
-                bmih.biPlanes = 1;
-                bmih.biBitCount = 32;
-                bmih.biCompression = BI_RGB;
-                bmih.biSizeImage = app->main_window_width * app->main_window_height * 4;
-
-                if (app->main_window_data.bitmap != NULL)
-                { DeleteObject(app->main_window_data.bitmap); }
-                app->main_window_data.bitmap = CreateDIBSection(NULL, (BITMAPINFO *) &bmih, DIB_RGB_COLORS, &(app->main_window_data.bitmap_data), NULL, 0);
-                SelectObject(app->main_window_data.hdc, app->main_window_data.bitmap);
-                if (app->main_window_data.bitmap != NULL)
-                { DeleteObject(app->main_window_data.bitmap); }
-                LeaveCriticalSection(&(app->main_window_data.mutex));
-                return 0;
-            }
-#endif
         case WM_CREATE:
         {
             CREATESTRUCTW *create_struct = (CREATESTRUCTW *) lParam;
@@ -214,11 +187,15 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
             app->render_accessories.bitmap2_data = NULL;
 
             InitializeCriticalSection(&(app->engine_state));
+            InitializeCriticalSection(&(app->engine_mutex));
             InitializeCriticalSection(&(app->render_access_mutex));
             InitializeCriticalSection(&(app->action_mutex));
 
             Brick7RopeModeling_SceneArena_Init(&(app->scene_arena), GetProcessHeap());
             Brick7RopeModeling_Stack_Init(&(app->stack));
+            Brick7RopeModeling_SceneArena_LinkScene(&(app->scene_arena), Brick7RopeModeling_Stack_GetCurrent(&(app->stack)), 1, 1);
+            Brick7RopeModeling_Scene_Init(&(app->engine_out));
+
 
             app->engine_thread = CreateThread(NULL, 0, Brick7RopeModeling_EngineThreadMain, app, 0, NULL);
             app->render_thread = CreateThread(NULL, 0, Brick7RopeModeling_RenderThreadMain, app, 0, NULL);
@@ -386,7 +363,6 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 app->action.value.remove_rope = (struct Brick7RopeModeling_AppAction_RemoveRope) {.x = 0, .y = 0};
                 LeaveCriticalSection(&(app->action_mutex));
             }
-            Brick7RopeModeling_ToolPanel_SetButtonsState(app);
             return 0;
         case WM_CREATE:
         {

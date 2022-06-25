@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <stdio.h>
 
 #include "brick.h"
 #include "rope.h"
@@ -9,6 +10,7 @@ BOOL Brick7RopeModeling_SceneArena_Init(Brick7RopeModeling_SceneArena *self, HAN
 {
     self->heap = heap;
     self->nodes = NULL;
+    InitializeCriticalSection(&(self->access_mutex));
     return FALSE;
 }
 
@@ -17,6 +19,7 @@ BOOL Brick7RopeModeling_SceneArena_LinkScene(Brick7RopeModeling_SceneArena *self
     if (scene->handler != NULL)
     { Brick7RopeModeling_SceneArena_UnLinkScene(self, scene); }
 
+    EnterCriticalSection(&(self->access_mutex));
     struct Brick7RopeModeling_SceneArena_NodeHead *p = HeapAlloc(
             self->heap,
             0,
@@ -37,12 +40,14 @@ BOOL Brick7RopeModeling_SceneArena_LinkScene(Brick7RopeModeling_SceneArena *self
     scene->bricks = (Brick7RopeModeling_Brick *) (((uintptr_t) p) + sizeof(struct Brick7RopeModeling_SceneArena_NodeHead));
     scene->allocated_ropes_count = ropes_count;
     scene->ropes = (Brick7RopeModeling_Rope *) (((uintptr_t) p) + sizeof(Brick7RopeModeling_Brick) * bricks_count);
+    LeaveCriticalSection(&(self->access_mutex));
 
     return FALSE;
 }
 
 void Brick7RopeModeling_SceneArena_UnLinkScene(Brick7RopeModeling_SceneArena *self, Brick7RopeModeling_Scene *scene)
 {
+    EnterCriticalSection(&(self->access_mutex));
     struct Brick7RopeModeling_SceneArena_NodeHead *p = scene->handler;
 
     if (p == NULL)
@@ -67,6 +72,7 @@ void Brick7RopeModeling_SceneArena_UnLinkScene(Brick7RopeModeling_SceneArena *se
     scene->allocated_ropes_count = 0;
     scene->ropes_count = 0;
     scene->ropes = NULL;
+    LeaveCriticalSection(&(self->access_mutex));
 }
 
 void Brick7RopeModeling_SceneArena_Finalize(Brick7RopeModeling_SceneArena *self)
@@ -78,4 +84,17 @@ void Brick7RopeModeling_SceneArena_Finalize(Brick7RopeModeling_SceneArena *self)
         fake_scene.handler = self->nodes;
         Brick7RopeModeling_SceneArena_UnLinkScene(self, &fake_scene);
     }
+}
+
+int Brick7RopeModeling_SceneArena_GetNodesCount(Brick7RopeModeling_SceneArena *self) {
+    struct Brick7RopeModeling_SceneArena_NodeHead *p = self->nodes;
+    int count = 0;
+
+    while (p != NULL)
+    {
+        p = p->next;
+        count++;
+    }
+
+    return count;
 }

@@ -507,7 +507,7 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
                             RGB(0, 0, 255)
                     );
                 }
-                if (state.action_value.drag_brick.hold)
+                if (state.action_value.drag_brick.held)
                 {
                     Brick7RopeModeling_DrawLine(
                             canvas,

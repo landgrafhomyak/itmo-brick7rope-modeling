@@ -116,7 +116,7 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                     break;
 
                 case Brick7RopeModeling_AppState_ActionType_DRAG_BRICK:
-                    if (!app->state.action_value.drag_brick.hold)
+                    if (!app->state.action_value.drag_brick.held)
                     { app->state.action_value.drag_brick.brick_index = Brick7RopeModeling_GetClosestBrick(app, LOWORD(lParam), HIWORD(lParam)); }
                     app->state.action_value.drag_brick.x = LOWORD(lParam);
                     app->state.action_value.drag_brick.y = HIWORD(lParam);
@@ -137,7 +137,7 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                     app->state.action_value.drag_brick.brick_index = Brick7RopeModeling_GetClosestBrick(app, app->state.action_value.drag_brick.x, app->state.action_value.drag_brick.y);
                     if (app->state.action_value.drag_brick.brick_index != Brick7RopeModeling_INVALID_INDEX)
                     {
-                        app->state.action_value.drag_brick.hold = TRUE;
+                        app->state.action_value.drag_brick.held = TRUE;
                         app->state.action_value.drag_brick.ox = ((INT) Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.action_value.drag_brick.brick_index].x) - app->state.action_value.drag_brick.x;
                         app->state.action_value.drag_brick.oy = ((INT) Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.action_value.drag_brick.brick_index].y) - app->state.action_value.drag_brick.y;
                     }
@@ -159,9 +159,7 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                     {
                         app->state.selection_type = Brick7RopeModeling_AppState_SelectionType_BRICK;
                         app->state.selection_value.brick.brick_index = app->state.action_value.select_brick.brick_index;
-                        app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
                         EnableWindow(app->tool_panel_stuff_windows.cancel_selection, TRUE);
-                        EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
                         EnableWindow(app->tool_panel_stuff_windows.remove_brick, TRUE);
                         EnableWindow(app->tool_panel_stuff_windows.remove_rope, FALSE);
                         EnableWindow(app->tool_panel_stuff_windows.lock_brick, TRUE);
@@ -174,9 +172,7 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                     {
                         app->state.selection_type = Brick7RopeModeling_AppState_SelectionType_ROPE;
                         app->state.selection_value.rope.rope_index = app->state.action_value.select_rope.rope_index;
-                        app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
                         EnableWindow(app->tool_panel_stuff_windows.cancel_selection, TRUE);
-                        EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
                         EnableWindow(app->tool_panel_stuff_windows.remove_brick, FALSE);
                         EnableWindow(app->tool_panel_stuff_windows.remove_rope, TRUE);
                         EnableWindow(app->tool_panel_stuff_windows.lock_brick, FALSE);
@@ -229,7 +225,16 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                                 rope
                         );
                         Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
-                        app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                        if (app->state.selection_type == Brick7RopeModeling_AppState_SelectionType_BRICK)
+                        {
+                            app->state.action_type = Brick7RopeModeling_AppState_ActionType_ADD_ROPE_1;
+                            app->state.action_value.add_rope_1.brick1_index = app->state.selection_value.brick.brick_index;
+                        }
+                        else
+                        {
+                            app->state.action_type = Brick7RopeModeling_AppState_ActionType_ADD_ROPE_0;
+                            app->state.action_value.add_rope_0.brick1_index = Brick7RopeModeling_INVALID_INDEX;
+                        }
                         EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
                         EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
                         EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
@@ -243,7 +248,8 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                         Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.action_value.drag_brick.brick_index].x = app->state.action_value.drag_brick.x + app->state.action_value.drag_brick.ox;
                         Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.action_value.drag_brick.brick_index].y = app->state.action_value.drag_brick.y + app->state.action_value.drag_brick.oy;
                         Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
-                        app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                        app->state.action_value.drag_brick.brick_index = Brick7RopeModeling_GetClosestBrick(app, app->state.action_value.drag_brick.x, app->state.action_value.drag_brick.y);
+                        app->state.action_value.drag_brick.held = FALSE;
                         EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
                         EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
                         EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
@@ -300,7 +306,6 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
         default:
             return DefWindowProcW(hWnd, Msg, wParam, lParam);
     }
-
 }
 
 
@@ -356,6 +361,8 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 EnableWindow(app->tool_panel_stuff_windows.resume, FALSE);
                 EnableWindow(app->tool_panel_stuff_windows.pause, TRUE);
                 EnableWindow(app->tool_panel_stuff_windows.clear, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.select_brick, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.select_rope, FALSE);
                 EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
                 // EnableWindow(app->tool_panel_stuff_windows.pan_scene, FALSE);
                 EnableWindow(app->tool_panel_stuff_windows.add_brick, FALSE);
@@ -381,6 +388,8 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 EnableWindow(app->tool_panel_stuff_windows.resume, TRUE);
                 EnableWindow(app->tool_panel_stuff_windows.pause, FALSE);
                 EnableWindow(app->tool_panel_stuff_windows.clear, TRUE);
+                EnableWindow(app->tool_panel_stuff_windows.select_brick, TRUE);
+                EnableWindow(app->tool_panel_stuff_windows.select_rope, TRUE);
                 EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
                 // EnableWindow(app->tool_panel_stuff_windows.pan_scene, TRUE);
                 EnableWindow(app->tool_panel_stuff_windows.add_brick, TRUE);
@@ -558,7 +567,7 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 app->state.action_type = Brick7RopeModeling_AppState_ActionType_DRAG_BRICK;
                 Brick7RopeModeling_GetClientMousePos(hWnd, &(app->state.action_value.drag_brick.x), &(app->state.action_value.drag_brick.y));
                 app->state.action_value.drag_brick.brick_index = Brick7RopeModeling_GetClosestBrick(app, app->state.action_value.drag_brick.x, app->state.action_value.drag_brick.y);
-                app->state.action_value.drag_brick.hold = FALSE;
+                app->state.action_value.drag_brick.held = FALSE;
                 LeaveCriticalSection(&(app->state.mutex));
                 EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
             }

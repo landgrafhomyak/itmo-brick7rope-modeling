@@ -9,7 +9,7 @@
     L"Button",                                                              \
     NAME,                                                                   \
     WS_VISIBLE | WS_CHILD | BS_ICON,                                        \
-    app->button_size * POS,                                                  \
+    app->button_size * POS,                                                 \
     0,                                                                      \
     app->button_size,                                                       \
     app->button_size,                                                       \
@@ -41,7 +41,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
     app->main_window = CreateWindowExW(
             WS_EX_APPWINDOW | WS_EX_CONTROLPARENT | WS_EX_NOINHERITLAYOUT,
             ATOM_AS_LPCWSTR(app->main_window_class),
-            L"Brick&Rope Modeling v1.0",
+            L"Brick&Rope Modeling v1.0+",
             WS_OVERLAPPEDWINDOW | WS_MAXIMIZE,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
@@ -55,7 +55,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
     if (app->main_window == NULL)
     { goto FREE_AND_ERR_0; }
 
-    RECT tool_panel_window_rect = {.top=0, .left=0, .right=app->button_size * 20, .bottom=app->button_size};
+    RECT tool_panel_window_rect = {.top=0, .left=0, .right=app->button_size * 21, .bottom=app->button_size};
     DWORD tool_panel_window_style = WS_POPUP | WS_CAPTION;
 
     AdjustWindowRect(&tool_panel_window_rect, tool_panel_window_style, FALSE);
@@ -78,7 +78,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
     { goto FREE_AND_ERR_1; }
 
     CREATE_BUTTON(save_capture, L"Save capture", 0, 1, 1);
-    CREATE_BUTTON(save_capture_as,L"Save capture as",1,  1, 1);
+    CREATE_BUTTON(save_capture_as, L"Save capture as", 1, 1, 1);
     CREATE_BUTTON(load_capture, L"Load capture", 2, 1, 1);
     CREATE_BUTTON(reset, L"Reset", 3, 1, 1);
     CREATE_BUTTON(resume, L"Resume", 4, 1, 1);
@@ -90,13 +90,19 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
     CREATE_BUTTON(select_brick, L"Select brick", 10, 1, 1);
     CREATE_BUTTON(select_rope, L"Select rope", 11, 1, 1);
     CREATE_BUTTON(cancel_action, L"Cancel state", 12, 1, 1);
-    CREATE_BUTTON(add_brick, L"Add brick", 13, 1, 1);
-    CREATE_BUTTON(remove_brick, L"Remove brick", 14, 1, 1);
-    CREATE_BUTTON(add_rope, L"Add rope", 15, 1, 1);
-    CREATE_BUTTON(remove_rope, L"Remove rope", 16, 1, 1);
-    CREATE_BUTTON(lock_brick, L"Lock brick", 17, 1, 1);
-    CREATE_BUTTON(unlock_brick, L"Unlock brick", 18, 1, 1);
-    CREATE_BUTTON(drag_brick, L"Drag brick", 19, 1, 1);
+    CREATE_BUTTON(pan_scene, L"Pan scene", 13, 1, 1);
+    CREATE_BUTTON(add_brick, L"Add brick", 14, 1, 1);
+    CREATE_BUTTON(remove_brick, L"Remove brick", 15, 1, 1);
+    CREATE_BUTTON(add_rope, L"Add rope", 16, 1, 1);
+    CREATE_BUTTON(remove_rope, L"Remove rope", 17, 1, 1);
+    CREATE_BUTTON(lock_brick, L"Lock brick", 18, 1, 1);
+    CREATE_BUTTON(unlock_brick, L"Unlock brick", 19, 1, 1);
+    CREATE_BUTTON(drag_brick, L"Drag brick", 20, 1, 1);
+
+    EnableWindow(app->tool_panel_stuff_windows.save_capture, FALSE);
+    EnableWindow(app->tool_panel_stuff_windows.save_capture_as, FALSE);
+    EnableWindow(app->tool_panel_stuff_windows.load_capture, FALSE);
+    EnableWindow(app->tool_panel_stuff_windows.pan_scene, FALSE);
 
     ShowWindow(app->main_window, SW_SHOW);
     ShowWindow(app->tool_panel_window, SW_SHOW);

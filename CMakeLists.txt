@@ -34,9 +34,6 @@ add_executable(
         src/objects/scene_arena.c
         src/engine.c
         src/threads.h
-        # src/gui/button.hpp
-        # src/gui/button.cpp
-        # src/gui/toolpanel.cpp
 )
 
 target_compile_definitions(brick7rope-modeling PUBLIC UNICODE)

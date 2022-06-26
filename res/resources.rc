@@ -1,5 +1,9 @@
 MAIN_ICON                     ICON    "icon.ico"
 
+BUTTON_SAVE_CAPTURE           ICON    "buttons/_save_capture.ico"
+BUTTON_SAVE_CAPTURE_AS        ICON    "buttons/_save_capture_as.ico"
+BUTTON_LOAD_CAPTURE           ICON    "buttons/_load_capture.ico"
+
 BUTTON_RESET                  ICON    "buttons/reset.ico"
 BUTTON_RESUME                 ICON    "buttons/resume.ico"
 BUTTON_PAUSE                  ICON    "buttons/pause.ico"
@@ -14,6 +18,7 @@ BUTTON_SELECT_BRICK           ICON    "buttons/select_brick.ico"
 BUTTON_SELECT_ROPE            ICON    "buttons/select_rope.ico"
 
 BUTTON_CANCEL_ACTION          ICON    "buttons/cancel_action.ico"
+BUTTON_PAN_SCENE              ICON    "buttons/pan_scene.ico"
 BUTTON_ADD_BRICK              ICON    "buttons/add_brick.ico"
 BUTTON_REMOVE_BRICK           ICON    "buttons/remove_brick.ico"
 BUTTON_ADD_ROPE               ICON    "buttons/add_rope.ico"
@@ -21,3 +26,4 @@ BUTTON_REMOVE_ROPE            ICON    "buttons/remove_rope.ico"
 BUTTON_LOCK_BRICK             ICON    "buttons/lock_brick.ico"
 BUTTON_UNLOCK_BRICK           ICON    "buttons/unlock_brick.ico"
 BUTTON_DRAG_BRICK             ICON    "buttons/drag_brick.ico"
+

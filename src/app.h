@@ -112,6 +112,7 @@ typedef struct Brick7RopeModeling_App
         HICON select_brick;
         HICON select_rope;
         HICON cancel_action;
+        HICON pan_scene;
         HICON add_brick;
         HICON remove_brick;
         HICON add_rope;
@@ -143,6 +144,7 @@ typedef struct Brick7RopeModeling_App
         HWND select_brick;
         HWND select_rope;
         HWND cancel_action;
+        HWND pan_scene;
         HWND add_brick;
         HWND remove_brick;
         HWND add_rope;

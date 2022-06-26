@@ -53,4 +53,4 @@ if (DEFINED MINGW)
     target_link_options(brick7rope-modeling PRIVATE -municode)
 endif ()
 
-install(TARGETS brick7rope-modeling)
+install(TARGETS brick7rope-modeling DESTINATION ./)

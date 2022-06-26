@@ -306,6 +306,7 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
                         RGB(0, 255, 0)
                 );
                 break;
+                
             default:
                 break;
         }

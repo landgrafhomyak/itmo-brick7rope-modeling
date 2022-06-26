@@ -99,10 +99,27 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
     CREATE_BUTTON(unlock_brick, L"Unlock brick", 19, 1, 1);
     CREATE_BUTTON(drag_brick, L"Drag brick", 20, 1, 1);
 
-    EnableWindow(app->tool_panel_stuff_windows.save_capture, FALSE);
-    EnableWindow(app->tool_panel_stuff_windows.save_capture_as, FALSE);
-    EnableWindow(app->tool_panel_stuff_windows.load_capture, FALSE);
-    EnableWindow(app->tool_panel_stuff_windows.pan_scene, FALSE);
+    EnableWindow(app->tool_panel_stuff_windows.save_capture, FALSE); // permanent
+    EnableWindow(app->tool_panel_stuff_windows.save_capture_as, FALSE); // permanent
+    EnableWindow(app->tool_panel_stuff_windows.load_capture, FALSE); // permanent
+    EnableWindow(app->tool_panel_stuff_windows.reset, TRUE);
+    EnableWindow(app->tool_panel_stuff_windows.resume, TRUE);
+    EnableWindow(app->tool_panel_stuff_windows.pause, FALSE);
+    EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+    EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
+    EnableWindow(app->tool_panel_stuff_windows.clear, TRUE);
+    EnableWindow(app->tool_panel_stuff_windows.cancel_selection, FALSE);
+    EnableWindow(app->tool_panel_stuff_windows.select_brick, TRUE);
+    EnableWindow(app->tool_panel_stuff_windows.select_rope, TRUE);
+    EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
+    EnableWindow(app->tool_panel_stuff_windows.pan_scene, FALSE); // permanent
+    EnableWindow(app->tool_panel_stuff_windows.add_brick, TRUE);
+    EnableWindow(app->tool_panel_stuff_windows.remove_brick, FALSE);
+    EnableWindow(app->tool_panel_stuff_windows.add_rope, TRUE);
+    EnableWindow(app->tool_panel_stuff_windows.remove_rope, FALSE);
+    EnableWindow(app->tool_panel_stuff_windows.lock_brick, FALSE);
+    EnableWindow(app->tool_panel_stuff_windows.unlock_brick, FALSE);
+    EnableWindow(app->tool_panel_stuff_windows.drag_brick, TRUE);
 
     ShowWindow(app->main_window, SW_SHOW);
     ShowWindow(app->tool_panel_window, SW_SHOW);

@@ -160,6 +160,12 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                         app->state.selection_type = Brick7RopeModeling_AppState_SelectionType_BRICK;
                         app->state.selection_value.brick.brick_index = app->state.action_value.select_brick.brick_index;
                         app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                        EnableWindow(app->tool_panel_stuff_windows.cancel_selection, TRUE);
+                        EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
+                        EnableWindow(app->tool_panel_stuff_windows.remove_brick, TRUE);
+                        EnableWindow(app->tool_panel_stuff_windows.remove_rope, FALSE);
+                        EnableWindow(app->tool_panel_stuff_windows.lock_brick, TRUE);
+                        EnableWindow(app->tool_panel_stuff_windows.unlock_brick, TRUE);
                     }
                     break;
 
@@ -169,6 +175,14 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                         app->state.selection_type = Brick7RopeModeling_AppState_SelectionType_ROPE;
                         app->state.selection_value.rope.rope_index = app->state.action_value.select_rope.rope_index;
                         app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                        EnableWindow(app->tool_panel_stuff_windows.cancel_selection, TRUE);
+                        EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
+                        EnableWindow(app->tool_panel_stuff_windows.remove_brick, FALSE);
+                        EnableWindow(app->tool_panel_stuff_windows.remove_rope, TRUE);
+                        EnableWindow(app->tool_panel_stuff_windows.lock_brick, FALSE);
+                        EnableWindow(app->tool_panel_stuff_windows.unlock_brick, FALSE);
+                        EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                        EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
                     }
                     break;
 
@@ -183,9 +197,10 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                     Brick7RopeModeling_Scene_AddBrick(
                             Brick7RopeModeling_Stack_GetCurrent(&(app->stack)),
                             brick
-
                     );
                     Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                    EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                    EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
                     break;
                 }
 
@@ -215,6 +230,9 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                         );
                         Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
                         app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                        EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
+                        EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
+                        EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
                     }
                     break;
 
@@ -226,6 +244,9 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                         Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.action_value.drag_brick.brick_index].y = app->state.action_value.drag_brick.y + app->state.action_value.drag_brick.oy;
                         Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
                         app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                        EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                        EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
+                        EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
                     }
                     break;
 
@@ -322,16 +343,53 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
             {}
             elifButton(reset)
             {
+                EnterCriticalSection(&(app->state.mutex));
+                app->state.selection_type = Brick7RopeModeling_AppState_SelectionType_NONE;
+                LeaveCriticalSection(&(app->state.mutex));
                 Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
             }
             elifButton(resume)
             {
+                EnableWindow(app->tool_panel_stuff_windows.reset, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.resume, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.pause, TRUE);
+                EnableWindow(app->tool_panel_stuff_windows.clear, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
+                // EnableWindow(app->tool_panel_stuff_windows.pan_scene, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.add_brick, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.remove_brick, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.add_rope, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.remove_rope, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.lock_brick, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.unlock_brick, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.drag_brick, FALSE);
+                EnterCriticalSection(&(app->state.mutex));
+                app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                LeaveCriticalSection(&(app->state.mutex));
                 app->engine_last_tick = Brick7RopeModeling_GetTicks();
                 LeaveCriticalSection(&(app->engine_state));
             }
             elifButton(pause)
             {
                 EnterCriticalSection(&(app->engine_state));
+                EnterCriticalSection(&(app->state.mutex));
+                app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
+                LeaveCriticalSection(&(app->state.mutex));
+                EnableWindow(app->tool_panel_stuff_windows.reset, TRUE);
+                EnableWindow(app->tool_panel_stuff_windows.resume, TRUE);
+                EnableWindow(app->tool_panel_stuff_windows.pause, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.clear, TRUE);
+                EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
+                // EnableWindow(app->tool_panel_stuff_windows.pan_scene, TRUE);
+                EnableWindow(app->tool_panel_stuff_windows.add_brick, TRUE);
+                EnableWindow(app->tool_panel_stuff_windows.remove_brick, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.add_rope, TRUE);
+                EnableWindow(app->tool_panel_stuff_windows.remove_rope, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.lock_brick, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.unlock_brick, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.drag_brick, TRUE);
             }
             elifButton(undo)
             {
@@ -355,10 +413,18 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                     Brick7RopeModeling_ToolPanel_CancelSelection(app);
                     Brick7RopeModeling_ToolPanel_Clear(app);
                 }
+                EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
+
             }
             elifButton(cancel_selection)
             {
                 Brick7RopeModeling_ToolPanel_CancelSelection(app);
+                EnableWindow(app->tool_panel_stuff_windows.cancel_selection, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.remove_brick, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.remove_rope, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.lock_brick, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.unlock_brick, FALSE);
             }
             elifButton(select_brick)
             {
@@ -368,6 +434,7 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 Brick7RopeModeling_GetClientMousePos(hWnd, &x, &y);
                 app->state.action_value.select_brick.brick_index = Brick7RopeModeling_GetClosestBrick(app, x, y);
                 LeaveCriticalSection(&(app->state.mutex));
+                EnableWindow(app->tool_panel_stuff_windows.cancel_action, TRUE);
             }
             elifButton(select_rope)
             {
@@ -377,17 +444,23 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 Brick7RopeModeling_GetClientMousePos(hWnd, &x, &y);
                 app->state.action_value.select_rope.rope_index = Brick7RopeModeling_GetClosestRope(app, x, y);
                 LeaveCriticalSection(&(app->state.mutex));
+                EnableWindow(app->tool_panel_stuff_windows.cancel_action, TRUE);
             }
             elifButton(cancel_action)
             {
                 Brick7RopeModeling_ToolPanel_CancelAction(app);
+                EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
+
             }
+            elifButton(pan_scene)
+            {}
             elifButton(add_brick)
             {
                 EnterCriticalSection(&(app->state.mutex));
                 app->state.action_type = Brick7RopeModeling_AppState_ActionType_ADD_BRICK;
                 Brick7RopeModeling_GetClientMousePos(hWnd, &(app->state.action_value.add_brick.x), &(app->state.action_value.add_brick.y));
                 LeaveCriticalSection(&(app->state.mutex));
+                EnableWindow(app->tool_panel_stuff_windows.cancel_action, TRUE);
             }
             elifButton(remove_brick)
             {
@@ -399,6 +472,15 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                     app->state.selection_type = Brick7RopeModeling_AppState_SelectionType_NONE;
                     app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
                     Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+
+                    EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                    EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
+                    EnableWindow(app->tool_panel_stuff_windows.cancel_selection, FALSE);
+                    EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
+                    EnableWindow(app->tool_panel_stuff_windows.remove_brick, FALSE);
+                    EnableWindow(app->tool_panel_stuff_windows.remove_rope, FALSE);
+                    EnableWindow(app->tool_panel_stuff_windows.lock_brick, FALSE);
+                    EnableWindow(app->tool_panel_stuff_windows.unlock_brick, FALSE);
                 }
                 LeaveCriticalSection(&(app->state.mutex));
             }
@@ -421,6 +503,7 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                     app->state.action_value.add_rope_0.brick1_index = Brick7RopeModeling_GetClosestBrick(app, x, y);
                 }
                 LeaveCriticalSection(&(app->state.mutex));
+                EnableWindow(app->tool_panel_stuff_windows.cancel_action, TRUE);
             }
             elifButton(remove_rope)
             {
@@ -432,6 +515,14 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                     app->state.selection_type = Brick7RopeModeling_AppState_SelectionType_NONE;
                     app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;
                     Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                    EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                    EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
+                    EnableWindow(app->tool_panel_stuff_windows.cancel_selection, FALSE);
+                    EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
+                    EnableWindow(app->tool_panel_stuff_windows.remove_brick, FALSE);
+                    EnableWindow(app->tool_panel_stuff_windows.remove_rope, FALSE);
+                    EnableWindow(app->tool_panel_stuff_windows.lock_brick, FALSE);
+                    EnableWindow(app->tool_panel_stuff_windows.unlock_brick, FALSE);
                 }
                 LeaveCriticalSection(&(app->state.mutex));
             }
@@ -443,6 +534,8 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                     Brick7RopeModeling_Stack_Add(&(app->stack));
                     Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.selection_value.brick.brick_index].is_locked = TRUE;
                     Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                    EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                    EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
                 }
                 LeaveCriticalSection(&(app->state.mutex));
             }
@@ -454,6 +547,8 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                     Brick7RopeModeling_Stack_Add(&(app->stack));
                     Brick7RopeModeling_Stack_GetCurrent(&(app->stack))->bricks[app->state.selection_value.brick.brick_index].is_locked = FALSE;
                     Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
+                    EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                    EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
                 }
                 LeaveCriticalSection(&(app->state.mutex));
             }
@@ -465,6 +560,7 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 app->state.action_value.drag_brick.brick_index = Brick7RopeModeling_GetClosestBrick(app, app->state.action_value.drag_brick.x, app->state.action_value.drag_brick.y);
                 app->state.action_value.drag_brick.hold = FALSE;
                 LeaveCriticalSection(&(app->state.mutex));
+                EnableWindow(app->tool_panel_stuff_windows.cancel_action, FALSE);
             }
 
             return 0;

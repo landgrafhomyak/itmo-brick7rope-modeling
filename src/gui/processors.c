@@ -149,6 +149,7 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
             }
             LeaveCriticalSection(&(app->state.mutex));
             return 0;
+
         case WM_LBUTTONUP:
             EnterCriticalSection(&(app->state.mutex));
             switch (app->state.action_type)
@@ -233,6 +234,7 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
             }
             LeaveCriticalSection(&(app->state.mutex));
             return 0;
+
         case WM_SIZE:
             EnterCriticalSection(&(app->render_access_mutex));
             app->main_window_width = LOWORD(lParam);

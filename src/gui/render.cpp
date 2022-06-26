@@ -289,20 +289,21 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
             case Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_SelectionType_BRICK:
                 Brick7RopeModeling_DrawCircle<Brick7RopeModeling_RawBufferCanvas<DWORD>>(
                         canvas,
-                        (INT) local_scene.bricks[app->state.selection_value.brick.brick_index].x,
-                        (INT) local_scene.bricks[app->state.selection_value.brick.brick_index].y,
+                        (INT) local_scene.bricks[state.selection_value.brick.brick_index].x,
+                        (INT) local_scene.bricks[state.selection_value.brick.brick_index].y,
                         app->brick_size,
                         RGB(255, 0, 0),
-                        local_scene.bricks[app->state.selection_value.brick.brick_index].is_locked ? RGB(200, 0, 0) : RGB(100, 0, 0)
+                        local_scene.bricks[state.selection_value.brick.brick_index].is_locked ? RGB(200, 0, 0) : RGB(100, 0, 0)
                 );
                 break;
+
             case Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_SelectionType_ROPE:
                 Brick7RopeModeling_DrawLine(
                         canvas,
-                        (INT) local_scene.bricks[local_scene.ropes[app->state.selection_value.rope.rope_index].brick1_index].x,
-                        (INT) local_scene.bricks[local_scene.ropes[app->state.selection_value.rope.rope_index].brick1_index].y,
-                        (INT) local_scene.bricks[local_scene.ropes[app->state.selection_value.rope.rope_index].brick2_index].x,
-                        (INT) local_scene.bricks[local_scene.ropes[app->state.selection_value.rope.rope_index].brick2_index].y,
+                        (INT) local_scene.bricks[local_scene.ropes[state.selection_value.rope.rope_index].brick1_index].x,
+                        (INT) local_scene.bricks[local_scene.ropes[state.selection_value.rope.rope_index].brick1_index].y,
+                        (INT) local_scene.bricks[local_scene.ropes[state.selection_value.rope.rope_index].brick2_index].x,
+                        (INT) local_scene.bricks[local_scene.ropes[state.selection_value.rope.rope_index].brick2_index].y,
                         RGB(0, 255, 0)
                 );
                 break;
@@ -314,38 +315,38 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
         switch (state.action_type)
         {
             case Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType_SELECT_BRICK:
-                if (app->state.action_value.select_brick.brick_index != Brick7RopeModeling_INVALID_INDEX)
+                if (state.action_value.select_brick.brick_index != Brick7RopeModeling_INVALID_INDEX)
                 {
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].y + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].y - app->brick_size,
                             RGB(255, 0, 0)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].y - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].y - app->brick_size,
                             RGB(255, 0, 0)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].y - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].y + app->brick_size,
                             RGB(255, 0, 0)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].y + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.select_brick.brick_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.select_brick.brick_index].y + app->brick_size,
                             RGB(255, 0, 0)
                     );
                 }
@@ -353,60 +354,60 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
                 break;
 
             case Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType_SELECT_ROPE:
-                if (app->state.action_value.select_rope.rope_index != Brick7RopeModeling_INVALID_INDEX)
+                if (state.action_value.select_rope.rope_index != Brick7RopeModeling_INVALID_INDEX)
                 {
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[local_scene.ropes[app->state.selection_value.rope.rope_index].brick1_index].x,
-                            (INT) local_scene.bricks[local_scene.ropes[app->state.selection_value.rope.rope_index].brick1_index].y,
-                            (INT) local_scene.bricks[local_scene.ropes[app->state.selection_value.rope.rope_index].brick2_index].x,
-                            (INT) local_scene.bricks[local_scene.ropes[app->state.selection_value.rope.rope_index].brick2_index].y,
+                            (INT) local_scene.bricks[local_scene.ropes[state.action_value.select_rope.rope_index].brick1_index].x,
+                            (INT) local_scene.bricks[local_scene.ropes[state.action_value.select_rope.rope_index].brick1_index].y,
+                            (INT) local_scene.bricks[local_scene.ropes[state.action_value.select_rope.rope_index].brick2_index].x,
+                            (INT) local_scene.bricks[local_scene.ropes[state.action_value.select_rope.rope_index].brick2_index].y,
                             RGB(0, 255, 0)
                     );
                 }
                 break;
 
             case Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType_ADD_ROPE_1:
-                if (app->state.action_value.add_rope_1.brick2_index != Brick7RopeModeling_INVALID_INDEX)
+                if (state.action_value.add_rope_1.brick2_index != Brick7RopeModeling_INVALID_INDEX)
                 {
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].y + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].y - app->brick_size,
                             RGB(0, 255, 255)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].y - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].y - app->brick_size,
                             RGB(0, 255, 255)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].y - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].y + app->brick_size,
                             RGB(0, 255, 255)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].y + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].y + app->brick_size,
                             RGB(0, 255, 255)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick1_index].x,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick1_index].y,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].x,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick2_index].y,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick1_index].x,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick1_index].y,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].x,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick2_index].y,
                             RGB(0, 255, 255)
                     );
                 }
@@ -414,47 +415,47 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
                 {
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick1_index].x,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_1.brick1_index].y,
-                            (INT) app->state.action_value.add_rope_1.x2,
-                            (INT) app->state.action_value.add_rope_1.y2,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick1_index].x,
+                            (INT) local_scene.bricks[state.action_value.add_rope_1.brick1_index].y,
+                            (INT) state.action_value.add_rope_1.x2,
+                            (INT) state.action_value.add_rope_1.y2,
                             RGB(0, 255, 255)
                     );
                 }
 
             case Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType_ADD_ROPE_0:
-                if (app->state.action_value.add_rope_0.brick1_index != Brick7RopeModeling_INVALID_INDEX)
+                if (state.action_value.add_rope_0.brick1_index != Brick7RopeModeling_INVALID_INDEX)
                 {
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].y + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].y - app->brick_size,
                             RGB(0, 255, 255)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].y - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].y - app->brick_size,
                             RGB(0, 255, 255)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].y - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].y + app->brick_size,
                             RGB(0, 255, 255)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].y + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.add_rope_0.brick1_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.add_rope_0.brick1_index].y + app->brick_size,
                             RGB(0, 255, 255)
                     );
                 }
@@ -471,55 +472,55 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_RenderThreadMain(Brick7RopeModeling_A
                 break;
 
             case Brick7RopeModeling_AppState::Brick7RopeModeling_AppState_ActionType_DRAG_BRICK:
-                if (app->state.action_value.drag_brick.brick_index != Brick7RopeModeling_INVALID_INDEX)
+                if (state.action_value.drag_brick.brick_index != Brick7RopeModeling_INVALID_INDEX)
                 {
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].y - app->brick_size,
                             RGB(0, 0, 255)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].y - app->brick_size,
                             RGB(0, 0, 255)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].y - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].y + app->brick_size,
                             RGB(0, 0, 255)
                     );
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x - app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x + app->brick_size,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].x - app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].y + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].x + app->brick_size,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].y + app->brick_size,
                             RGB(0, 0, 255)
                     );
                 }
-                if (app->state.action_value.drag_brick.hold)
+                if (state.action_value.drag_brick.hold)
                 {
                     Brick7RopeModeling_DrawLine(
                             canvas,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].x,
-                            (INT) local_scene.bricks[app->state.action_value.drag_brick.brick_index].y,
-                            app->state.action_value.drag_brick.x + app->state.action_value.drag_brick.ox,
-                            app->state.action_value.drag_brick.y + app->state.action_value.drag_brick.oy,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].x,
+                            (INT) local_scene.bricks[state.action_value.drag_brick.brick_index].y,
+                            state.action_value.drag_brick.x + state.action_value.drag_brick.ox,
+                            state.action_value.drag_brick.y + state.action_value.drag_brick.oy,
                             RGB(0, 0, 255)
                     );
                     Brick7RopeModeling_DrawCircle<Brick7RopeModeling_RawBufferCanvas<DWORD>>(
                             canvas,
-                            state.action_value.drag_brick.x + app->state.action_value.drag_brick.ox,
-                            state.action_value.drag_brick.y + app->state.action_value.drag_brick.oy,
+                            state.action_value.drag_brick.x + state.action_value.drag_brick.ox,
+                            state.action_value.drag_brick.y + state.action_value.drag_brick.oy,
                             app->brick_size,
                             RGB(0, 0, 255)
                     );

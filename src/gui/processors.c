@@ -360,6 +360,8 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 EnableWindow(app->tool_panel_stuff_windows.reset, FALSE);
                 EnableWindow(app->tool_panel_stuff_windows.resume, FALSE);
                 EnableWindow(app->tool_panel_stuff_windows.pause, TRUE);
+                EnableWindow(app->tool_panel_stuff_windows.undo, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.redo, FALSE);
                 EnableWindow(app->tool_panel_stuff_windows.clear, FALSE);
                 EnableWindow(app->tool_panel_stuff_windows.select_brick, FALSE);
                 EnableWindow(app->tool_panel_stuff_windows.select_rope, FALSE);
@@ -387,6 +389,8 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
                 EnableWindow(app->tool_panel_stuff_windows.reset, TRUE);
                 EnableWindow(app->tool_panel_stuff_windows.resume, TRUE);
                 EnableWindow(app->tool_panel_stuff_windows.pause, FALSE);
+                EnableWindow(app->tool_panel_stuff_windows.undo, Brick7RopeModeling_Stack_CanUndo(&(app->stack)));
+                EnableWindow(app->tool_panel_stuff_windows.redo, Brick7RopeModeling_Stack_CanRedo(&(app->stack)));
                 EnableWindow(app->tool_panel_stuff_windows.clear, TRUE);
                 EnableWindow(app->tool_panel_stuff_windows.select_brick, TRUE);
                 EnableWindow(app->tool_panel_stuff_windows.select_rope, TRUE);

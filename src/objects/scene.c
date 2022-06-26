@@ -70,7 +70,7 @@ void Brick7RopeModeling_Scene_RemoveRope(Brick7RopeModeling_Scene *self, size_t 
     if (rope_index >= self->ropes_count)
     { return; }
 
-    memmove(&(self->bricks[rope_index]), &(self->bricks[rope_index + 1]), sizeof(Brick7RopeModeling_Rope) * (--self->ropes_count - rope_index));
+    memmove(&(self->ropes[rope_index]), &(self->ropes[rope_index + 1]), sizeof(Brick7RopeModeling_Rope) * (--self->ropes_count - rope_index));
 }
 
 void Brick7RopeModeling_Scene_AddBrick(Brick7RopeModeling_Scene *self, Brick7RopeModeling_Brick brick)

@@ -41,7 +41,7 @@ BOOL Brick7RopeModeling_CreateAndShowWindows(Brick7RopeModeling_App *app)
     app->main_window = CreateWindowExW(
             WS_EX_APPWINDOW | WS_EX_CONTROLPARENT | WS_EX_NOINHERITLAYOUT,
             ATOM_AS_LPCWSTR(app->main_window_class),
-            L"Brick&Rope Modeling v1.0+",
+            L"Brick&Rope Modeling v1.1",
             WS_OVERLAPPEDWINDOW | WS_MAXIMIZE,
             CW_USEDEFAULT,
             CW_USEDEFAULT,

@@ -2,12 +2,13 @@
 
 #include <windows.h>
 
+#include "common.h"
 #include "objects/scene.h"
 #include "app.h"
 #include "threads.h"
 
 
-static unsigned long long Brick7RopeModeling_GetTicks(void)
+unsigned long long Brick7RopeModeling_GetTicks(void)
 {
 
     FILETIME ft;
@@ -28,7 +29,6 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_EngineThreadMain(Brick7RopeModeling_A
     Brick7RopeModeling_Scene new_scene;
     long double a, ax, ay, f, dl, dt;
     size_t brick_index, rope_index;
-    unsigned long long prev_time = Brick7RopeModeling_GetTicks();
 
 
     Brick7RopeModeling_Scene_Init(&local_scene);
@@ -42,8 +42,8 @@ DWORD DECLSPEC_NORETURN Brick7RopeModeling_EngineThreadMain(Brick7RopeModeling_A
         Brick7RopeModeling_Scene_Copy(&(app->engine_out), &local_scene);
         LeaveCriticalSection(&(app->engine_mutex));
 
-        dt = (long double) (Brick7RopeModeling_GetTicks() - prev_time) / 10000000;
-        prev_time = Brick7RopeModeling_GetTicks();
+        dt = (long double) (Brick7RopeModeling_GetTicks() - app->engine_last_tick) / 10000000;
+        app->engine_last_tick = Brick7RopeModeling_GetTicks();
 
         Brick7RopeModeling_Scene_Copy(&local_scene, &new_scene);
 

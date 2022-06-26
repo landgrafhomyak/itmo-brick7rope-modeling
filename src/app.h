@@ -160,10 +160,9 @@ typedef struct Brick7RopeModeling_App
     CRITICAL_SECTION engine_state;
     Brick7RopeModeling_Scene engine_out;
     CRITICAL_SECTION engine_mutex;
+    unsigned long long engine_last_tick;
 
     CRITICAL_SECTION render_access_mutex;
-    long double x;
-    long double y;
 
     DWORD main_window_width;
     DWORD main_window_height;

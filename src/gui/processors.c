@@ -324,6 +324,7 @@ LRESULT Brick7RopeModeling_ToolPanel_Proc(HWND hWnd, UINT Msg, WPARAM wParam, LP
             }
             elifButton(resume)
             {
+                app->engine_last_tick = Brick7RopeModeling_GetTicks();
                 LeaveCriticalSection(&(app->engine_state));
             }
             elifButton(pause)

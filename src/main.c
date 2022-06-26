@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include <windows.h>
 
 #include "app.h"
@@ -7,6 +9,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 {
     Brick7RopeModeling_App app = {.button_size = 32, .brick_size=16};
     int ret;
+
+    srand(335139);
 
     app.hInstance = hInstance;
 

@@ -4,7 +4,9 @@
 # ifdef __cplusplus
 #  include <cstddef>
 # else
+
 #  include <stddef.h>
+
 # endif
 
 # include <windows.h>
@@ -18,6 +20,11 @@ typedef struct Brick7RopeModeling_Brick
     long double x;
     long double y;
     BOOL is_locked;
+
+    long double mass;
+    long double speed;
+    long double sx;
+    long double sy;
 } Brick7RopeModeling_Brick;
 
 BOOL Brick7RopeModeling_Brick_Init(Brick7RopeModeling_Brick *self);

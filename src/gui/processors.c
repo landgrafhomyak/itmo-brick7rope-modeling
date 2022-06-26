@@ -172,16 +172,21 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                     break;
 
                 case Brick7RopeModeling_AppState_ActionType_ADD_BRICK:
+                {
+                    Brick7RopeModeling_Brick brick;
+                    Brick7RopeModeling_Brick_Init(&brick);
+                    brick.x = app->state.action_value.add_brick.x;
+                    brick.y = app->state.action_value.add_brick.y;
+
                     Brick7RopeModeling_Stack_Add(&(app->stack));
                     Brick7RopeModeling_Scene_AddBrick(
                             Brick7RopeModeling_Stack_GetCurrent(&(app->stack)),
-                            (Brick7RopeModeling_Brick) {
-                                    .x = app->state.action_value.add_brick.x,
-                                    .y = app->state.action_value.add_brick.y,
-                            }
+                            brick
+
                     );
                     Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
                     break;
+                }
 
                 case Brick7RopeModeling_AppState_ActionType_ADD_ROPE_0:
                     if (app->state.action_value.add_rope_0.brick1_index != Brick7RopeModeling_INVALID_INDEX)
@@ -197,13 +202,15 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                 case Brick7RopeModeling_AppState_ActionType_ADD_ROPE_1:
                     if (app->state.action_value.add_rope_1.brick2_index != Brick7RopeModeling_INVALID_INDEX)
                     {
+                        Brick7RopeModeling_Rope rope;
+                        Brick7RopeModeling_Rope_Init(&rope);
+                        rope.brick1_index = app->state.action_value.add_rope_1.brick1_index;
+                        rope.brick2_index = app->state.action_value.add_rope_1.brick2_index;
+
                         Brick7RopeModeling_Stack_Add(&(app->stack));
                         Brick7RopeModeling_Scene_AddRope(
                                 Brick7RopeModeling_Stack_GetCurrent(&(app->stack)),
-                                (Brick7RopeModeling_Rope) {
-                                        .brick1_index = app->state.action_value.add_rope_1.brick1_index,
-                                        .brick2_index = app->state.action_value.add_rope_1.brick2_index,
-                                }
+                                rope
                         );
                         Brick7RopeModeling_UpdateEngineWithCurrentStack(app);
                         app->state.action_type = Brick7RopeModeling_AppState_ActionType_VOID;

@@ -206,7 +206,8 @@ LRESULT Brick7RopeModeling_MainWindow_Proc(HWND hWnd, UINT Msg, WPARAM wParam, L
                         size_t brick1_index = app->state.action_value.add_rope_0.brick1_index;
                         app->state.action_type = Brick7RopeModeling_AppState_ActionType_ADD_ROPE_1;
                         app->state.action_value.add_rope_1.brick1_index = brick1_index;
-                        Brick7RopeModeling_GetClientMousePos(hWnd, &(app->state.action_value.add_rope_1.x2), &(app->state.action_value.add_rope_1.y2));
+                        app->state.action_value.add_rope_1.x2 = LOWORD(lParam);
+                        app->state.action_value.add_rope_1.y2 = HIWORD(lParam);
                         app->state.action_value.add_rope_1.brick2_index = Brick7RopeModeling_GetClosestBrick(app, app->state.action_value.add_rope_1.x2, app->state.action_value.add_rope_1.y2);
                     }
                     break;

@@ -28,7 +28,7 @@ Abilities:
 
 For building:
 - Windows SDK
-- [CMake](https://cmake.org/) 3.5 or grater
+- [CMake](https://cmake.org/) 3.5 or later
 - MSVC or MinGW compiler with standards `C99` and `C++11`
 
 ### Using
